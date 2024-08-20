@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 import json
+import requests
 import base64
 from requests import post, get
 from spotipy import Spotify
@@ -8,8 +9,6 @@ from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
 from flask import Flask, session, redirect, url_for, request, render_template
 from beyondllm import retrieve, generator, source
-
-
 import re
 
 from beyondllm.embeddings import GeminiEmbeddings
@@ -111,7 +110,8 @@ def home():
             playing_artist_name = ', '.join(artist['name'] for artist in playing_track.get('artists', []))
             playing_album_name = playing_track.get('album', {}).get('name', 'Unknown')
             playing_track_url = playing_track.get('external_urls', {}).get('spotify', '#')
-            playing_track_image = playing_track.get('album', {}).get('images', [{}])[1].get('url', 'No image available')
+            track_images = playing_track.get('album', {}).get('images', [])
+            playing_track_image = track_images[1].get('url', 'No image available') if len(track_images) > 1 else 'No image available'
             currently_playing_html = f'''
             <h2>Currently Playing</h2>
             <p>Track Name: {playing_track_name}</p>
@@ -128,16 +128,23 @@ def home():
         user_profile = sp.current_user()
         user_display_name = user_profile['display_name']
         user_profile_url = user_profile['external_urls']['spotify']
-        user_profile_image = user_profile['images'][0]['url']  # Use the smaller image
+        user_images = user_profile.get('images', [])
+        user_profile_image = user_images[0]['url'] if len(user_images) > 0 else 'https://www.google.com/imgres?q=dummy%20profile%20pic&imgurl=https%3A%2F%2Fbeforeigosolutions.com%2Fwp-content%2Fuploads%2F2021%2F12%2Fdummy-profile-pic-300x300-1.png&imgrefurl=https%3A%2F%2Fbeforeigosolutions.com%2Fpascale-atkinson%2Fattachment%2Fdummy-profile-pic-300x300-1%2F&docid=-be1M6COtQJYCM&tbnid=lwajYrMcLkqoMM&vet=12ahUKEwiUiIrHp4SIAxWtia8BHTOMK-UQM3oECHEQAA..i&w=300&h=300&hcb=2&ved=2ahUKEwiUiIrHp4SIAxWtia8BHTOMK-UQM3oECHEQAA'
 
         # Fetch user's top artists
         top_artists = sp.current_user_top_artists(limit=5, offset=0, time_range='medium_term')
-        artists_info = [(artist['id'], artist['name'], artist['external_urls']['spotify'], artist.get('images', [{}])[0].get('url', 'No image available')) for artist in top_artists['items']]
+        artists_info = [
+            (artist['id'], artist['name'], artist['external_urls']['spotify'],
+             artist.get('images', [{}])[0].get('url', 'No image available')) for artist in top_artists['items']
+        ]
         artists_html = '<br>'.join([f'{name}: <a href="{url}" target="_blank">Open Artist</a> <br> <img src="{image}" alt="Artist Image" width="100">' for _, name, url, image in artists_info])
 
         # Fetch user's top tracks
         top_tracks = sp.current_user_top_tracks(limit=5, offset=0, time_range='medium_term')
-        tracks_info = [(track['id'], track['name'], track['external_urls']['spotify'], track.get('album', {}).get('images', [{}])[1].get('url', 'No image available')) for track in top_tracks['items']]
+        tracks_info = [
+            (track['id'], track['name'], track['external_urls']['spotify'],
+             track.get('album', {}).get('images', [{}])[1].get('url', 'No image available')) for track in top_tracks['items']
+        ]
         tracks_html = '<br>'.join([f'{name}: <a href="{url}" target="_blank">Open Track</a> <br> <img src="{image}" alt="Track Image" width="100">' for _, name, url, image in tracks_info])
 
         return render_template('home.html', currently_playing_html=currently_playing_html, artists_html=artists_html, tracks_html=tracks_html, user_display_name=user_display_name, user_profile_url=user_profile_url, user_profile_image=user_profile_image)
@@ -290,7 +297,6 @@ def create_playlist_from_input():
         playlist_id = playlist['id']
         playlist_url = playlist['external_urls']['spotify']
 
-        # Get the access token
         token = get_token()
 
         # Search for song IDs and add them to the playlist
