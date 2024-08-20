@@ -57,7 +57,7 @@ To get started with **YourTunes**, follow these steps:
 ## Design
 
 Explore our design on Figma:
-[View Figma Design](https://www.figma.com/proto/TkGCbuvVCSGnmnIGGTHzUb/your-tunes?node-id=123-45&t=7fSnlgfd32b9XZl1-1&scaling=contain&content-scaling=fixed&page-id=103%3A40&starting-point-node-id=123%3A45)
+[View Figma Design]https://www.figma.com/proto/TkGCbuvVCSGnmnIGGTHzUb/your-tunes?node-id=178-119&starting-point-node-id=178%3A119&t=hogWmZGlILcpITwa-1
 
 ## Team
 
