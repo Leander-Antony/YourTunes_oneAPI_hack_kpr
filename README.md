@@ -64,6 +64,8 @@ Explore our design on Figma:
 - [Leander Antony](https://github.com/Leander-Antony) 
 - [Bhoopesh](https://github.com/bhoopesh1)
 - [Abishek](https://github.com/Abishek-coder01)
+- [Harsshan Senthil](https://github.com/harsshan06s)
+  
 
 ## Requirements
 

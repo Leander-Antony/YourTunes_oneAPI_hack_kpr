@@ -8,8 +8,8 @@ from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
 from flask import Flask, session, redirect, url_for, request, jsonify, render_template
 from beyondllm import retrieve, generator, source
-import os
-from dotenv import load_dotenv
+
+
 import re
 
 from beyondllm.embeddings import GeminiEmbeddings
