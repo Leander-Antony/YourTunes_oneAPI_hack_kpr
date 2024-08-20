@@ -6,7 +6,7 @@ from requests import post, get
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
-from flask import Flask, session, redirect, url_for, request, jsonify, render_template
+from flask import Flask, session, redirect, url_for, request, render_template
 from beyondllm import retrieve, generator, source
 
 
@@ -187,7 +187,22 @@ def extract_songs(text):
     songs = [line.strip() for line in lines if line.strip()]
     return songs
 
+def songs_from_top_artists(mood):
+    top_artists = sp.current_user_top_artists(limit=5, offset=0, time_range='medium_term')
+    artists_name = [(artist['name']) for artist in top_artists['items']]
+    pipeline = generator.Generate(
+        question=mood,
+        system_prompt=f"You are a playlist generator based on the user's {mood} from {artists_name}. Provide 25 songs to comfort the user in . I need the output in a simple list format, one song per line.",
+        retriever=retriever,
+        llm=llm
+    )
+    response = safe_call(pipeline)
+    if response:
+        songs = extract_songs(response)
+        print(songs)
+        return songs
 
+    return []
 
 def playlist_generator(mood, prferred_language):
     pipeline = generator.Generate(
@@ -245,11 +260,23 @@ def create_playlist_from_input():
     if not mood:
         return "Error analyzing mood.", 500
 
-    songs = playlist_generator(mood, preferred_language)
-    if not songs:
+    # Get songs based on mood
+    playlist_songs = playlist_generator(mood, preferred_language)
+    if not playlist_songs:
         return "No songs generated for the playlist.", 500
 
-    name = playlist_name_generator(songs, mood)
+    # Get additional songs from top artists
+    top_artists_songs = songs_from_top_artists(mood)
+    if not top_artists_songs:
+        return "No songs from top artists generated.", 500
+
+    # Combine both song lists
+    all_songs = playlist_songs + top_artists_songs
+    if not all_songs:
+        return "No songs available for the playlist.", 500
+
+    # Generate playlist name and description
+    name = playlist_name_generator(all_songs, mood)
     if not name:
         return "Error generating playlist name.", 500
 
@@ -265,18 +292,18 @@ def create_playlist_from_input():
 
         # Get the access token
         token = get_token()
-        
+
         # Search for song IDs and add them to the playlist
         track_ids = []
-        for song in songs:
+        for song in all_songs:
             song_info = search_song_id(token, song)
             if song_info:
                 track_ids.append(song_info['uri'])
-        
+
         if track_ids:
             sp.playlist_add_items(playlist_id, track_ids)
-        
-        # Get the cover image
+
+        # Fetch the cover image URL (optional, for verification)
         playlist_cover_image = sp.playlist_cover_image(playlist_id)
         cover_image_url = playlist_cover_image[0]['url'] if playlist_cover_image else 'No image available'
 
