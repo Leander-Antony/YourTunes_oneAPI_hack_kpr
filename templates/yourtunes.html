@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Tunes</title>
-    <link rel="stylesheet" href="player.css">
 
     <style>
-        
         * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        
         
         body {
             display: flex;
@@ -27,12 +24,10 @@
             color: #ffffff;
         }
 
-        .whitemode{
+        .whitemode {
             background-color: rgb(255, 255, 255);
             color: rgb(0, 0, 0);
         }
-
-
 
         h1 {
             text-align: center;
@@ -67,15 +62,13 @@
         .home-btn:hover {
             background-color: #0056b6;
         }
-             
-         
+
         .note {
             position: absolute;
             top: -50px;
             font-size: 24px;
             color: white;
             animation: fall linear infinite;
-
         }
 
         @keyframes fall {
@@ -92,11 +85,7 @@
                 transform: translateX(50px);
             }
         }
-
-
     </style>
-
-
 </head>
 <body>
     <h1>Playlist Created Successfully!</h1>
@@ -106,56 +95,44 @@
     <div class="note" style="left: 60%; animation-duration: 6s;">♫</div>
     <div class="note" style="left: 80%; animation-duration: 7s;">♩</div>
   
-
     <script>
         function getPlaylistIdFromUrl(playlist_url) {
             if (playlist_url.includes('open.spotify.com/playlist/')) {
-                // Extract the playlist ID from the URL
                 const playlistId = playlist_url.split('open.spotify.com/playlist/')[1].split('?')[0];
                 return playlistId;
             } else {
-                return null; // Return null if the URL is not a valid Spotify playlist URL
+                return null;
             }
         }
 
-        // Assuming the playlist_url is passed from the server-side code
         const playlistId = getPlaylistIdFromUrl('{{ playlist_url }}');
 
         if (playlistId) {
-            // Create the Spotify embedded player
             const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
             const iframe = document.createElement('iframe');
             iframe.src = embedUrl;
             iframe.width = '600';
             iframe.height = '380';
-
-            iframe.frameborder = '0';
-     main
-            iframe.allowtransparency = 'true';
+            iframe.frameBorder = '0';
+            iframe.allowTransparency = 'true';
             iframe.allow = 'encrypted-media';
 
-            // Append the iframe to the body
             document.body.appendChild(iframe);
         } else {
-            // Display an error message
             const errorMessage = document.createElement('p');
             errorMessage.textContent = 'Invalid Spotify playlist URL.';
             document.body.appendChild(errorMessage);
         }
-
 
         const notes = document.querySelectorAll('.note');
         notes.forEach(note => {
             note.style.animationDuration = `${Math.random() * 3 + 3}s`;
             note.style.left = `${Math.random() * 100}vw`;
         });
-
-        
-
     </script>
 
     <button class="home-btn">
-            <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('home') }}" style="text-decoration: none; color: black;">Home</a>
     </button>
 </body>
 </html>
