@@ -4,46 +4,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Tunes</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #161b16;
+            color: #ffffff;
+        }
+
+        .whitemode {
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+        }
+
+        h1 {
+            text-align: center;
+            height: 90px;
+            color: rgb(249, 255, 245);
+        }
+
+        .playlist-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #0000008c;
+            border-radius: 8px;
+            border: 0px;
+        }
+
+        .home-btn {
+            background-color: #0ea540b2;
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 130px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .home-btn:hover {
+            background-color: #0056b6;
+        }
+
+        .note {
+            position: absolute;
+            top: -50px;
+            font-size: 24px;
+            color: white;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        @keyframes drift {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(50px);
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Playlist Created Successfully!</h1>
     
-
+    <div class="note" style="left: 20%; animation-duration: 4s;">♪</div>
+    <div class="note" style="left: 40%; animation-duration: 5s;">♬</div>
+    <div class="note" style="left: 60%; animation-duration: 6s;">♫</div>
+    <div class="note" style="left: 80%; animation-duration: 7s;">♩</div>
+  
     <script>
         function getPlaylistIdFromUrl(playlist_url) {
             if (playlist_url.includes('open.spotify.com/playlist/')) {
-                // Extract the playlist ID from the URL
                 const playlistId = playlist_url.split('open.spotify.com/playlist/')[1].split('?')[0];
                 return playlistId;
             } else {
-                return null; // Return null if the URL is not a valid Spotify playlist URL
+                return null;
             }
         }
 
-        // Assuming the playlist_url is passed from the server-side code
         const playlistId = getPlaylistIdFromUrl('{{ playlist_url }}');
 
         if (playlistId) {
-            // Create the Spotify embedded player
             const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
             const iframe = document.createElement('iframe');
             iframe.src = embedUrl;
             iframe.width = '600';
             iframe.height = '380';
             iframe.frameBorder = '0';
-            iframe.frameborder = '0';
-            iframe.allowtransparency = 'true';
+            iframe.allowTransparency = 'true';
             iframe.allow = 'encrypted-media';
 
-            // Append the iframe to the body
             document.body.appendChild(iframe);
         } else {
-            // Display an error message
             const errorMessage = document.createElement('p');
             errorMessage.textContent = 'Invalid Spotify playlist URL.';
             document.body.appendChild(errorMessage);
         }
+
+        const notes = document.querySelectorAll('.note');
+        notes.forEach(note => {
+            note.style.animationDuration = `${Math.random() * 3 + 3}s`;
+            note.style.left = `${Math.random() * 100}vw`;
+        });
     </script>
-    <a href="{{ url_for('home') }}">Go to Home</a>
+
+    <button class="home-btn">
+        <a href="{{ url_for('home') }}" style="text-decoration: none; color: black;">Home</a>
+    </button>
 </body>
 </html>
