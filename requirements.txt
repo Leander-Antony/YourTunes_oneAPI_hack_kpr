@@ -3,4 +3,4 @@ python-dotenv
 requests
 spotipy
 beyondllm
-gunicron
+gunicorn
