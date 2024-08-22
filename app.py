@@ -169,17 +169,6 @@ def callback():
     sp_oauth.get_access_token(request.args['code'])
     return redirect(url_for('home'))
 
-@app.route('/get_playlists')
-def get_playlists():
-    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
-        return redirect(sp_oauth.get_authorize_url())
-
-    playlists = sp.current_user_playlists()
-    playlists_info = [(playlist['name'], playlist['external_urls']['spotify']) for playlist in playlists['items']]
-    playlists_html = '<br>'.join([f'{name}: <a href="{url}" target="_blank">Open Playlist</a>' for name, url in playlists_info])
-
-    return render_template('playlists.html', playlists_html=playlists_html)
-
 
 def safe_call(pipeline):
     try:
@@ -188,16 +177,6 @@ def safe_call(pipeline):
         print(f"Error: {e}")
         return None
 
-def mood_analyse(input):
-    pipeline = generator.Generate(
-        question=input,
-        system_prompt="You are a mood analyzer based on the user's input, respond with one word indicating their mood.",
-        retriever=retriever,
-        llm=llm
-    )
-    response = safe_call(pipeline)
-    print(response)
-    return response
 
 def extract_songs(text):
     # Assuming each song is on a new line
@@ -205,12 +184,12 @@ def extract_songs(text):
     songs = [line.strip() for line in lines if line.strip()]
     return songs
 
-def songs_from_top_artists(mood):
+def songs_from_top_artists(user_input):
     top_artists = sp.current_user_top_artists(limit=5, offset=0, time_range='medium_term')
     artists_name = [(artist['name']) for artist in top_artists['items']]
     pipeline = generator.Generate(
-        question=mood,
-        system_prompt=f"You are a playlist generator based on the user's {mood} from {artists_name}. Provide 25 songs to comfort the user in . I need the output in a simple list format, one song per line.",
+        question=user_input,
+        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 25 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
@@ -222,10 +201,10 @@ def songs_from_top_artists(mood):
 
     return []
 
-def playlist_generator(mood, prferred_language):
+def playlist_generator(user_input, prferred_language):
     pipeline = generator.Generate(
-        question=mood,
-        system_prompt=f"You are a playlist generator based on the user's mood. Provide 50 songs to comfort the user in {prferred_language}. I need the output in a simple list format, one song per line.",
+        question=user_input,
+        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 50 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
@@ -237,12 +216,12 @@ def playlist_generator(mood, prferred_language):
     
     return []
 
-def playlist_name_generator(songs, mood):
+def playlist_name_generator(songs, user_input):
     """Generate a name for the playlist based on songs and mood."""
     song_list_str = '\n'.join(songs)  # Convert list to a single string
     pipeline = generator.Generate(
         question=song_list_str,
-        system_prompt=f"Based on the user input and {mood}, generate a name for the playlist that resonates with the mood.",
+        system_prompt=f"Based on the user input and {user_input}, generate a name for the playlist that resonates with the mood.",
         retriever=retriever,
         llm=llm
     )
@@ -250,10 +229,10 @@ def playlist_name_generator(songs, mood):
     print(response)
     return response
 
-def playlist_description_generator(mood, name):
+def playlist_description_generator(user_input, name):
     """Generate a description for the playlist."""
     pipeline = generator.Generate(
-        question=f"i need description for my playlist based on {mood} and {name}",
+        question=f"i need description for my playlist based on {user_input} and {name}",
         system_prompt=f"Generate a brief description for the a playlist .",
         retriever=retriever,
         llm=llm
@@ -268,23 +247,19 @@ def create_playlist_from_input():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()):
         return redirect(sp_oauth.get_authorize_url())
 
-    input = request.form.get('mood')
+    user_input = request.form.get('mood')
     preferred_language = request.form.get('language')
 
     if not input or not preferred_language:
         return "Mood or language not provided.", 400
 
-    mood = mood_analyse(input)
-    if not mood:
-        return "Error analyzing mood.", 500
-
     # Get songs based on mood
-    playlist_songs = playlist_generator(mood, preferred_language)
+    playlist_songs = playlist_generator(user_input, preferred_language)
     if not playlist_songs:
         return "No songs generated for the playlist.", 500
 
     # Get additional songs from top artists
-    top_artists_songs = songs_from_top_artists(mood)
+    top_artists_songs = songs_from_top_artists(user_input)
     if not top_artists_songs:
         return "No songs from top artists generated.", 500
 
@@ -294,11 +269,11 @@ def create_playlist_from_input():
         return "No songs available for the playlist.", 500
 
     # Generate playlist name and description
-    name = playlist_name_generator(all_songs, mood)
+    name = playlist_name_generator(all_songs, user_input)
     if not name:
         return "Error generating playlist name.", 500
 
-    description = playlist_description_generator(mood, name)
+    description = playlist_description_generator(user_input, name)
     if not description:
         description = "A playlist created based on your mood."
 

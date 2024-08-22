@@ -7,9 +7,7 @@
 </head>
 <body>
     <h1>Playlist Created Successfully!</h1>
-    <p><strong>Playlist Link:</strong> <a href="{{ playlist_url }}" target="_blank">Open Playlist</a></p>
-    <p>Cover Image: <img src="{{ cover_image_url }}" alt="Cover Image" width="300"></p>
-    <a href="{{ url_for('home') }}">Go to Home</a>
+    
 
     <script>
         function getPlaylistIdFromUrl(playlist_url) {
@@ -30,8 +28,9 @@
             const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
             const iframe = document.createElement('iframe');
             iframe.src = embedUrl;
-            iframe.width = '300';
+            iframe.width = '600';
             iframe.height = '380';
+            iframe.frameBorder = '0';
             iframe.frameborder = '0';
             iframe.allowtransparency = 'true';
             iframe.allow = 'encrypted-media';
@@ -45,5 +44,6 @@
             document.body.appendChild(errorMessage);
         }
     </script>
+    <a href="{{ url_for('home') }}">Go to Home</a>
 </body>
 </html>
