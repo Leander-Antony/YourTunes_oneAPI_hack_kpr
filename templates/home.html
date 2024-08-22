@@ -2,29 +2,125 @@
 <html>
 <head>
     <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F5F5F5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .user-profile img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .user-profile a {
+            color: #333;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-container label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-container .input-fields {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .form-container .input-field {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .form-container input[type="text"]::placeholder {
+            color: #999;
+        }
+        .form-container input[type="submit"] {
+            background-color: #FF0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .logout-button {
+            color: #333;
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #fff;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .content-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Home Page</h1>
-    
-    <!-- User Profile Section -->
-    <h2>Welcome, <a href="{{ user_profile_url }}" target="_blank">{{ user_display_name }}</a></h2>
-    <img src="{{ user_profile_image }}" alt="Profile Image" width="64" style="border-radius: 50%;">
-    
-    <form action="/create_playlist" method="post">
-        <label for="mood">How do you feel today?</label>
-        <input type="text" id="mood" name="mood" required>
-        <label for="language">Preferred Language:</label>
-        <input type="text" id="language" name="language" required>
-        <input type="submit" value="Submit">
-    </form><br>
-    
-    <a href="/logout">Logout</a>
-    <hr>
-    {{ currently_playing_html|safe }}
-    <h2>Your Top Artists</h2>
-    {{ artists_html|safe }}
-    <hr>
-    <h2>Your Top Tracks</h2>
-    {{ tracks_html|safe }}
+    <div class="container">
+        <div class="user-profile">
+            <div>
+                <img src="{{ user_profile_image }}" alt="Profile Image">
+                <a href="{{ user_profile_url }}" target="_blank">{{ user_display_name }}</a>
+            </div>
+            <a href="/logout" class="logout-button">Logout</a>
+        </div>
+        
+        <div class="form-container">
+            <form action="/create_playlist" method="post">
+                <div class="input-fields">
+                    <input type="text" id="mood" name="mood" class="input-field" placeholder="How do you feel today?" required>
+                    <input type="text" id="language" name="language" class="input-field" placeholder="Language" required>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+        
+        <div class="content-container">
+            <h2 class="section-title">Your Top Artists</h2>
+            {{ artists_html|safe }}
+        </div>
+        
+        <div class="content-container">
+            <h2 class="section-title">Your Top Tracks</h2>
+            {{ tracks_html|safe }}
+        </div>
+    </div>
 </body>
 </html>

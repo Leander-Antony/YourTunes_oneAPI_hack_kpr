@@ -158,17 +158,6 @@ def callback():
     sp_oauth.get_access_token(request.args['code'])
     return redirect(url_for('home'))
 
-@app.route('/get_playlists')
-def get_playlists():
-    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
-        return redirect(sp_oauth.get_authorize_url())
-
-    playlists = sp.current_user_playlists()
-    playlists_info = [(playlist['name'], playlist['external_urls']['spotify']) for playlist in playlists['items']]
-    playlists_html = '<br>'.join([f'{name}: <a href="{url}" target="_blank">Open Playlist</a>' for name, url in playlists_info])
-
-    return render_template('playlists.html', playlists_html=playlists_html)
-
 
 def safe_call(pipeline):
     try:
@@ -189,7 +178,7 @@ def songs_from_top_artists(user_input):
     artists_name = [(artist['name']) for artist in top_artists['items']]
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 25 songs to comfort the user in . I need the output in a simple list format, one song per line.",
+        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 25 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
@@ -204,7 +193,7 @@ def songs_from_top_artists(user_input):
 def playlist_generator(user_input, prferred_language):
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 50 songs to comfort the user in {prferred_language}. I need the output in a simple list format, one song per line.",
+        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 50 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
