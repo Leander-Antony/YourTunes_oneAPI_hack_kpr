@@ -4,7 +4,7 @@
     <title>Home Page</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #F5F5F5;
@@ -37,26 +37,24 @@
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
-        .form-container label {
-            display: block;
+        .greeting {
+            text-align: center;
+            font-size: 24px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 20px;
         }
         .form-container .input-fields {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
+            justify-content: center;
         }
         .form-container .input-field {
             width: 200px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 3px;
-            margin-bottom: 10px;
             font-size: 14px;
         }
         .form-container input[type="text"]::placeholder {
@@ -69,6 +67,7 @@
             padding: 10px 20px;
             border-radius: 3px;
             cursor: pointer;
+            height: 40px;
         }
         .logout-button {
             color: #333;
@@ -88,7 +87,69 @@
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .artist-carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+        .artist-item {
+            flex: 0 0 25%;
+            max-width: 25%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        .artist-item:hover {
+            transform: scale(1.05);
+        }
+        .artist-cover {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .artist-name {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .carousel-nav button {
+            background-color: #FF0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            margin: 0 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        @media (orientation: landscape) {
+            .artist-carousel {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .artist-item {
+                flex: 0 0 20%;
+                margin: 10px;
+            }
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+    
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -103,24 +164,78 @@
         </div>
         
         <div class="form-container">
+            <div class="greeting">Hi, {{ user_display_name }}</div>
             <form action="/create_playlist" method="post">
                 <div class="input-fields">
                     <input type="text" id="mood" name="mood" class="input-field" placeholder="How do you feel today?" required>
                     <input type="text" id="language" name="language" class="input-field" placeholder="Language" required>
+                    <input type="submit" value="Submit">
                 </div>
-                <input type="submit" value="Submit">
             </form>
         </div>
         
         <div class="content-container">
             <h2 class="section-title">Your Top Artists</h2>
-            {{ artists_html|safe }}
+            <div class="artist-carousel" id="artistCarousel">
+                {% if top_artists %}
+                    {% for artist in top_artists %}
+                    <div class="artist-item">
+                        <img src="{{ artist.image_url }}" alt="{{ artist.name }}" class="artist-cover">
+                        <p class="artist-name">{{ artist.name }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No top artists data available.</p>
+                {% endif %}
+            </div>
         </div>
-        
         <div class="content-container">
             <h2 class="section-title">Your Top Tracks</h2>
             {{ tracks_html|safe }}
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.getElementById('artistCarousel');
+            const items = Array.from(carousel.children);
+            const itemsPerSlide = 4; // Display four artists at a time
+            const totalSlides = Math.ceil(items.length / itemsPerSlide);
+            let currentSlide = 0;
+    
+            function showNextSlide() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateCarousel();
+            }
+    
+            function updateCarousel() {
+                const start = currentSlide * itemsPerSlide;
+                const end = start + itemsPerSlide;
+                items.forEach((item, index) => {
+                    if (index >= start && index < end) {
+                        item.style.display = 'block';
+                        item.classList.add('fade-in');
+                    } else {
+                        item.style.display = 'none';
+                        item.classList.remove('fade-in');
+                    }
+                });
+    
+                // Shift positions within the visible set
+                for (let i = 0; i < itemsPerSlide; i++) {
+                    const currentIndex = (start + i) % items.length;
+                    const nextIndex = (start + i + 1) % items.length;
+                    items[currentIndex].style.order = i;
+                    items[nextIndex].style.order = (i + 1) % itemsPerSlide;
+                }
+            }
+    
+            // Initial setup
+            updateCarousel();
+    
+            // Auto-slide every 3 seconds
+            setInterval(showNextSlide, 3000);
+        });
+    </script>
+       
 </body>
 </html>

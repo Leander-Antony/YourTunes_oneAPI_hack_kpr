@@ -96,6 +96,7 @@ def get_songs_of_artist(token, artist_id):
 def login():
     return render_template('login.html')
 
+
 @app.route('/home')
 def home():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()):
@@ -129,30 +130,40 @@ def home():
         user_display_name = user_profile['display_name']
         user_profile_url = user_profile['external_urls']['spotify']
         user_images = user_profile.get('images', [])
-        user_profile_image = user_images[0]['url'] if len(user_images) > 0 else 'https://www.google.com/imgres?q=dummy%20profile%20pic&imgurl=https%3A%2F%2Fbeforeigosolutions.com%2Fwp-content%2Fuploads%2F2021%2F12%2Fdummy-profile-pic-300x300-1.png&imgrefurl=https%3A%2F%2Fbeforeigosolutions.com%2Fpascale-atkinson%2Fattachment%2Fdummy-profile-pic-300x300-1%2F&docid=-be1M6COtQJYCM&tbnid=lwajYrMcLkqoMM&vet=12ahUKEwiUiIrHp4SIAxWtia8BHTOMK-UQM3oECHEQAA..i&w=300&h=300&hcb=2&ved=2ahUKEwiUiIrHp4SIAxWtia8BHTOMK-UQM3oECHEQAA'
+        user_profile_image = user_images[0]['url'] if len(user_images) > 0 else 'https://example.com/default-profile-image.png'
 
         # Fetch user's top artists
-        top_artists = sp.current_user_top_artists(limit=5, offset=0, time_range='medium_term')
+        top_artists = sp.current_user_top_artists(limit=10, offset=0, time_range='medium_term')
         artists_info = [
-            (artist['id'], artist['name'], artist['external_urls']['spotify'],
-             artist.get('images', [{}])[0].get('url', 'No image available')) for artist in top_artists['items']
+            {
+                'name': artist['name'],
+                'url': artist['external_urls']['spotify'],
+                'image_url': artist.get('images', [{}])[0].get('url', 'No image available')
+            } for artist in top_artists['items']
         ]
-        artists_html = '<br>'.join([f'{name}: <a href="{url}" target="_blank">Open Artist</a> <br> <img src="{image}" alt="Artist Image" width="100">' for _, name, url, image in artists_info])
 
         # Fetch user's top tracks
         top_tracks = sp.current_user_top_tracks(limit=5, offset=0, time_range='medium_term')
         tracks_info = [
-            (track['id'], track['name'], track['external_urls']['spotify'],
-             track.get('album', {}).get('images', [{}])[1].get('url', 'No image available')) for track in top_tracks['items']
+            {
+                'name': track['name'],
+                'url': track['external_urls']['spotify'],
+                'image_url': track.get('album', {}).get('images', [{}])[1].get('url', 'No image available')
+            } for track in top_tracks['items']
         ]
-        tracks_html = '<br>'.join([f'{name}: <a href="{url}" target="_blank">Open Track</a> <br> <img src="{image}" alt="Track Image" width="100">' for _, name, url, image in tracks_info])
 
-        return render_template('home.html', currently_playing_html=currently_playing_html, artists_html=artists_html, tracks_html=tracks_html, user_display_name=user_display_name, user_profile_url=user_profile_url, user_profile_image=user_profile_image)
+        return render_template('home.html', 
+                               currently_playing_html=currently_playing_html, 
+                               top_artists=artists_info,
+                               top_tracks=tracks_info, 
+                               user_display_name=user_display_name, 
+                               user_profile_url=user_profile_url, 
+                               user_profile_image=user_profile_image)
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error in home route: {e}")
         return redirect(url_for('login'))
-
+    
 @app.route('/callback')
 def callback():
     sp_oauth.get_access_token(request.args['code'])
