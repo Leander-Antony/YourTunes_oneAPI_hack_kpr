@@ -103,7 +103,7 @@ def home():
         return redirect(sp_oauth.get_authorize_url())
 
     try:
-        # Fetch the currently playing track
+        
         currently_playing = sp.current_playback()
         if currently_playing and currently_playing.get('is_playing'):
             playing_track = currently_playing['item']
