@@ -212,7 +212,7 @@ def home():
         user_display_name = user_profile['display_name']
         user_profile_url = user_profile['external_urls']['spotify']
         user_images = user_profile.get('images', [])
-        user_profile_image = user_images[0]['url'] if len(user_images) > 0 else 'https://example.com/default-profile-image.png'
+        user_profile_image = user_images[0]['url'] if user_images else None
 
         # Fetch user's top artists
         top_artists = sp.current_user_top_artists(limit=10, offset=0, time_range='medium_term')

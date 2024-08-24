@@ -1,40 +1,29 @@
 document.addEventListener("DOMContentLoaded", function () {
   const carousel = document.getElementById("artistCarousel");
   const items = Array.from(carousel.children);
-  const itemsPerSlide = 4; // Display four artists at a time
-  const totalSlides = Math.ceil(items.length / itemsPerSlide);
-  let currentSlide = 0;
+  const totalItems = items.length;
+  let currentIndex = 0;
 
-  function showNextSlide() {
-    currentSlide = (currentSlide + 1) % totalSlides;
-    updateCarousel();
-  }
-
-  function updateCarousel() {
-    const start = currentSlide * itemsPerSlide;
-    const end = start + itemsPerSlide;
-    items.forEach((item, index) => {
-      if (index >= start && index < end) {
-        item.style.display = "block";
-        item.classList.add("fade-in");
-      } else {
-        item.style.display = "none";
-        item.classList.remove("fade-in");
-      }
-    });
-
-    // Shift positions within the visible set
-    for (let i = 0; i < itemsPerSlide; i++) {
-      const currentIndex = (start + i) % items.length;
-      const nextIndex = (start + i + 1) % items.length;
-      items[currentIndex].style.order = i;
-      items[nextIndex].style.order = (i + 1) % itemsPerSlide;
-    }
+  function scrollCarousel() {
+    currentIndex = (currentIndex + 1) % totalItems;
+    const translateX = -currentIndex * 100 / 4; // Divide by 4 as we show 4 items at once
+    carousel.style.transform = `translateX(${translateX}%)`;
   }
 
   // Initial setup
-  updateCarousel();
+  items.forEach((item, index) => {
+    item.style.left = `${index * 25}%`; // 25% as we show 4 items
+  });
 
-  // Auto-slide every 3 seconds
-  setInterval(showNextSlide, 3000);
+  // Auto-scroll every 3 seconds
+  setInterval(scrollCarousel, 3000);
+
+  // Pause animation on hover
+  carousel.addEventListener('mouseenter', () => {
+    clearInterval(scrollInterval);
+  });
+
+  carousel.addEventListener('mouseleave', () => {
+    scrollInterval = setInterval(scrollCarousel, 3000);
+  });
 });
