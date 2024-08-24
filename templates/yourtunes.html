@@ -1,230 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Tunes</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #161b16;
-            color: #ffffff;
-        }
-
-        .whitemode {
-            background-color: rgb(255, 255, 255);
-            color: rgb(0, 0, 0);
-        }
-
-        h1 {
-            text-align: center;
-            height: 90px;
-            color: rgb(249, 255, 245);
-        }
-
-        .playlist-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-            padding: 20px;
-            background-color: #0000008c;
-            border-radius: 8px;
-            border: 0px;
-        }
-
-        .home-btn {
-            background-color: #0ea540b2;
-            color: rgb(0, 0, 0);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 130px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
-        }
-
-        .home-btn:hover {
-            background-color: #0056b6;
-        }
-
-        .note {
-            position: absolute;
-            top: -50px;
-            font-size: 24px;
-            color: white;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh);
-            }
-        }
-
-        @keyframes drift {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            50% {
-                transform: translateX(50px);
-            }
-        }
-
-        .music {
-            display: inline-flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            width: 300px;
-            height: 200px;
-        }
-
-        .music .bar {
-            width: 12px;
-            height: 2px;
-            border-radius: 10px;
-            background-color: #ffffff;
-            animation: up_down 1.5s ease-in-out infinite;
-        }
-
-        @keyframes up_down {
-            0% {
-                height: 2px;
-            }
-            50% {
-                height: 80px;
-            }
-            100% {
-                height: 2px;
-            }
-        }
-
-        .music .bar:nth-child(1) {
-            background-color: rgb(255, 255, 255);
-            animation-delay: 1s;
-        }
-
-        .music .bar:nth-child(2) {
-            background-color: rgb(255, 255, 255);
-            animation-delay: 0.8s;
-        }
-
-        .music .bar:nth-child(3) {
-            background-color: rgb(255, 255, 255);
-            animation-delay: 0.6s;
-        }
-
-        .music .bar:nth-child(4) {
-            background-color: rgb(255, 249, 239);
-            animation-delay: 0.4s;
-        }
-
-        .music .bar:nth-child(5) {
-            background-color: rgb(255, 255, 255);
-            animation-delay: 0.2s;
-        }
-
-        .music .bar:nth-child(6) {
-            background-color: rgb(255, 255, 255);
-            animation-delay: 0s;
-        }
-        
-        .music .bar:nth-child(7) {
-            background-color: rgb(255, 255, 255);
-            animation-delay: 0.2s;
-        }
-        .music .bar:nth-child(8) {
-            background-color: rgb(255, 255, 255); 
-            animation-delay: 0.4s;
-        }
-        .music .bar:nth-child(9) {
-            background-color: rgb(255, 255, 255); 
-            animation-delay: 0.6s;
-        }
-        .music .bar:nth-child(10) {
-            background-color: rgb(255, 255, 255); 
-            animation-delay: 0.8s;
-        }
-
-    </style>
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/yourtunes.css') }}"
+    />
+  </head>
+  <body>
     <h1>Music’s in the mix! Tap play and turn up!</h1>
-    
-    <div class="note" style="left: 20%; animation-duration: 4s;">♪</div>
-    <div class="note" style="left: 40%; animation-duration: 5s;">♬</div>
-    <div class="note" style="left: 60%; animation-duration: 6s;">♫</div>
-    <div class="note" style="left: 80%; animation-duration: 7s;">♩</div>
-  
+
+    <div class="note" style="left: 20%; animation-duration: 4s">♪</div>
+    <div class="note" style="left: 40%; animation-duration: 5s">♬</div>
+    <div class="note" style="left: 60%; animation-duration: 6s">♫</div>
+    <div class="note" style="left: 80%; animation-duration: 7s">♩</div>
+
     <script>
-        function getPlaylistIdFromUrl(playlist_url) {
-            if (playlist_url.includes('open.spotify.com/playlist/')) {
-                const playlistId = playlist_url.split('open.spotify.com/playlist/')[1].split('?')[0];
-                return playlistId;
-            } else {
-                return null;
-            }
-        }
-
-        const playlistId = getPlaylistIdFromUrl('{{ playlist_url }}');
-
-        if (playlistId) {
-            const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
-            const iframe = document.createElement('iframe');
-            iframe.src = embedUrl;
-            iframe.width = '600';
-            iframe.height = '380';
-            iframe.frameBorder = '0';
-            iframe.allowTransparency = 'true';
-            iframe.allow = 'encrypted-media';
-
-            document.body.appendChild(iframe);
+      function getPlaylistIdFromUrl(playlist_url) {
+        if (playlist_url.includes("open.spotify.com/playlist/")) {
+          const playlistId = playlist_url
+            .split("open.spotify.com/playlist/")[1]
+            .split("?")[0];
+          return playlistId;
         } else {
-            const errorMessage = document.createElement('p');
-            errorMessage.textContent = 'Invalid Spotify playlist URL.';
-            document.body.appendChild(errorMessage);
+          return null;
         }
+      }
 
-        const notes = document.querySelectorAll('.note');
-        notes.forEach(note => {
-            note.style.animationDuration = `${Math.random() * 3 + 3}s`;
-            note.style.left = `${Math.random() * 100}vw`;
-        });
+      const playlistId = getPlaylistIdFromUrl("{{ playlist_url }}");
+
+      if (playlistId) {
+        const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
+        const iframe = document.createElement("iframe");
+        iframe.src = embedUrl;
+        iframe.width = "500";
+        iframe.height = "400";
+        iframe.frameBorder = "0";
+        iframe.allowTransparency = "true";
+        iframe.allow = "encrypted-media";
+
+        document.body.appendChild(iframe);
+      } else {
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = "Invalid Spotify playlist URL.";
+        document.body.appendChild(errorMessage);
+      }
+
+      const notes = document.querySelectorAll(".note");
+      notes.forEach((note) => {
+        note.style.animationDuration = `${Math.random() * 3 + 3}s`;
+        note.style.left = `${Math.random() * 100}vw`;
+      });
     </script>
 
     <div class="music">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
     </div>
 
-
-    <button class="home-btn">
-        <a href="{{ url_for('home') }}" style="text-decoration: none; color: black;">Home</a>
-    </button>
-</body>
+    <a href="{{ url_for('home') }}">
+      <button class="home-btn">Home</button>
+    </a>
+  </body>
 </html>
