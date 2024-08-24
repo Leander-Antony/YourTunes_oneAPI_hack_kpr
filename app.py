@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 import os
 import json
-import requests
 import base64
 from requests import post, get
 from spotipy import Spotify
@@ -10,7 +9,6 @@ from spotipy.cache_handler import FlaskSessionCacheHandler
 from flask import Flask, session, redirect, url_for, request, render_template
 from beyondllm import retrieve, generator, source
 import re
-
 from beyondllm.embeddings import GeminiEmbeddings
 from beyondllm.llms import GeminiModel
 
@@ -62,6 +60,7 @@ def get_token():
 def get_auth_header(token):
     return {"Authorization": "Bearer " + token}
 
+
 def search_song_id(token, song_name):
     url = "https://api.spotify.com/v1/search"
     headers = get_auth_header(token)
@@ -74,6 +73,7 @@ def search_song_id(token, song_name):
         return None
     return tracks[0]
 
+
 def search_artists_id(token, artist_name):
     url = "https://api.spotify.com/v1/search"
     headers = get_auth_header(token)
@@ -85,12 +85,94 @@ def search_artists_id(token, artist_name):
         return None
     return json_result[0]
 
+
 def get_songs_of_artist(token, artist_id):
     url = f"https://api.spotify.com/v1/artists/{artist_id}/top-tracks?country=ID"
     headers = get_auth_header(token)
     result = get(url, headers=headers)
     json_result = json.loads(result.content)["tracks"]
     return json_result
+
+
+def safe_call(pipeline):
+    try:
+        return pipeline.call()
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+def extract_songs(text):
+    # Assuming each song is on a new line
+    lines = text.split('\n')
+    songs = [line.strip() for line in lines if line.strip()]
+    return songs
+
+
+def songs_from_top_artists(user_input):
+    top_artists = sp.current_user_top_artists(limit=5, offset=0, time_range='medium_term')
+    artists_name = [(artist['name']) for artist in top_artists['items']]
+    pipeline = generator.Generate(
+        question=user_input,
+        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 25 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
+        retriever=retriever,
+        llm=llm
+    )
+    response = safe_call(pipeline)
+    if response:
+        songs = extract_songs(response)
+        print("Getting Songs from top artists")
+        return songs
+
+    return []
+
+
+def playlist_generator(user_input, prferred_language):
+    pipeline = generator.Generate(
+        question=user_input,
+        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 50 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
+        retriever=retriever,
+        llm=llm
+    )
+    response = safe_call(pipeline)
+    if response:
+        songs = extract_songs(response)
+        print("Generating sonngs based on user's input")
+        return songs
+    
+    return []
+
+
+def extract_playlist_name(text):
+    match = re.search(r'^\s*"(.+?)"\s*$|^\s*\*\*(.+?)\*\*\s*$|^\s*(\w[\w\s]*)\s*$', text)
+    if match:
+        return match.group(1) or match.group(2) or match.group(3)
+    return None
+
+
+def playlist_name_generator(songs, user_input):
+    song_list_str = '\n'.join(songs)  # Convert list to a single string
+    pipeline = generator.Generate(
+        question=song_list_str,
+        system_prompt=f"Based on the user input and {user_input}, generate a name for the playlist that resonates with the mood.",
+        retriever=retriever,
+        llm=llm
+    )
+    response = safe_call(pipeline)
+    extracted_name = extract_playlist_name(response)
+    print(extracted_name)
+    return extracted_name
+
+def playlist_description_generator(user_input, name):
+    pipeline = generator.Generate(
+        question=f"i need description for my playlist based on {user_input} and {name}",
+        system_prompt=f"Generate a brief description for the a playlist .",
+        retriever=retriever,
+        llm=llm
+    )
+    response = safe_call(pipeline)
+    print(response)
+    return response
 
 @app.route('/')
 def login():
@@ -164,83 +246,11 @@ def home():
         print(f"Error in home route: {e}")
         return redirect(url_for('login'))
     
+    
 @app.route('/callback')
 def callback():
     sp_oauth.get_access_token(request.args['code'])
     return redirect(url_for('home'))
-
-
-def safe_call(pipeline):
-    try:
-        return pipeline.call()
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-
-
-def extract_songs(text):
-    # Assuming each song is on a new line
-    lines = text.split('\n')
-    songs = [line.strip() for line in lines if line.strip()]
-    return songs
-
-def songs_from_top_artists(user_input):
-    top_artists = sp.current_user_top_artists(limit=5, offset=0, time_range='medium_term')
-    artists_name = [(artist['name']) for artist in top_artists['items']]
-    pipeline = generator.Generate(
-        question=user_input,
-        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 25 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
-        retriever=retriever,
-        llm=llm
-    )
-    response = safe_call(pipeline)
-    if response:
-        songs = extract_songs(response)
-        print(songs)
-        return songs
-
-    return []
-
-def playlist_generator(user_input, prferred_language):
-    pipeline = generator.Generate(
-        question=user_input,
-        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 50 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
-        retriever=retriever,
-        llm=llm
-    )
-    response = safe_call(pipeline)
-    if response:
-        songs = extract_songs(response)
-        print(songs)
-        return songs
-    
-    return []
-
-def playlist_name_generator(songs, user_input):
-    """Generate a name for the playlist based on songs and mood."""
-    song_list_str = '\n'.join(songs)  # Convert list to a single string
-    pipeline = generator.Generate(
-        question=song_list_str,
-        system_prompt=f"Based on the user input and {user_input}, generate a name for the playlist that resonates with the mood.",
-        retriever=retriever,
-        llm=llm
-    )
-    response = safe_call(pipeline)
-    print(response)
-    return response
-
-def playlist_description_generator(user_input, name):
-    """Generate a description for the playlist."""
-    pipeline = generator.Generate(
-        question=f"i need description for my playlist based on {user_input} and {name}",
-        system_prompt=f"Generate a brief description for the a playlist .",
-        retriever=retriever,
-        llm=llm
-    )
-    response = safe_call(pipeline)
-    print(response)
-    return response
-
 
 @app.route('/create_playlist', methods=['POST'])
 def create_playlist_from_input():
@@ -306,8 +316,6 @@ def create_playlist_from_input():
 
 
 
-
-
 @app.route('/yourtunes')
 def your_tunes():
     playlist_id = request.args.get('playlist_id')
@@ -318,9 +326,6 @@ def your_tunes():
         return "No playlist information available.", 400
 
     return render_template('yourtunes.html', playlist_id=playlist_id, playlist_url=playlist_url, cover_image_url=cover_image_url)
-
-
-
 
 
 @app.route('/logout')
