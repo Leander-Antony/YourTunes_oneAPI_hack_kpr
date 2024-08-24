@@ -18,11 +18,24 @@ body {
     margin-bottom: 20px;
 }
 
-.user-profile img {
+.user-profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image {
     width: 64px;
     height: 64px;
     border-radius: 50%;
     margin-right: 10px;
+    background-color: #1DB954; /* Spotify green color */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .user-profile a {
@@ -102,7 +115,8 @@ body {
 .artist-carousel {
     display: flex;
     transition: transform 0.5s ease-in-out;
-    width: 100%;
+    width: 400%;
+    position: relative;
 }
 
 .artist-item {
@@ -110,10 +124,14 @@ body {
     max-width: 25%;
     padding: 0 10px;
     box-sizing: border-box;
+    position: absolute;
+    transition: all 0.3s ease-in-out;
 }
 
 .artist-item:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
+    z-index: 1;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .artist-cover {
@@ -129,31 +147,15 @@ body {
     font-size: 14px;
 }
 
-.carousel-nav {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-}
-
-.carousel-nav button {
-    background-color: #FF0000;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    margin: 0 5px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
 @media (orientation: landscape) {
     .artist-carousel {
-        flex-wrap: wrap;
-        justify-content: center;
+        width: 100%;
+        flex-wrap: nowrap;
     }
 
     .artist-item {
-        flex: 0 0 20%;
-        margin: 10px;
+        position: relative;
+        left: auto !important;
     }
 }
 
