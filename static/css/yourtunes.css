@@ -23,8 +23,9 @@ body {
 
 h1 {
     text-align: center;
-    height: 90px;
+    height: 70px;
     color: rgb(249, 255, 245);
+    font-size: 50px;
 }
 
 .playlist-container {
@@ -39,21 +40,20 @@ h1 {
 }
 
 .home-btn {
-    background-color: #0ea540b2;
-    color: rgb(0, 0, 0);
+    color: #eb0000;
     border: none;
-    padding: 10px 20px;
+    padding: 20px 45px;
     border-radius: 130px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
     text-decoration: none;
     display: inline-block;
-    margin-top: 20px;
+    margin-top: 18px;
+    background-image: linear-gradient(to right , #F5DEB3, #FFF0F5);
+    font-size:25px ;
 }
 
-.home-btn:hover {
-    background-color: #0056b6;
-}
+
 
 .note {
     position: absolute;
