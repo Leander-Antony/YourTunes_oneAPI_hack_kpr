@@ -11,7 +11,7 @@ body{
        justify-content: center;
        align-items: center;
        min-height: 100vh;
-       background: url(https://raw.githubusercontent.com/Leander-Antony/YourTunes_oneAPI_hack_kpr/main/static/image/bg.gif?token=GHSAT0AAAAAACVS2AJPCW5TT577UXMGRHWQZWLC5WQ) no-repeat;
+       background: url("/static/image/bg.gif") no-repeat;
        background-size: cover;
        background-position: center;
        
