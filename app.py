@@ -225,12 +225,13 @@ def home():
         ]
 
         # Fetch user's top tracks
-        top_tracks = sp.current_user_top_tracks(limit=5, offset=0, time_range='medium_term')
+        top_tracks = sp.current_user_top_tracks(limit=10, offset=0, time_range='medium_term')
         tracks_info = [
             {
                 'name': track['name'],
+                'artist': track['artists'][0]['name'],
                 'url': track['external_urls']['spotify'],
-                'image_url': track.get('album', {}).get('images', [{}])[1].get('url', 'No image available')
+                'image_url': track['album']['images'][0]['url'] if track['album']['images'] else 'No image available'
             } for track in top_tracks['items']
         ]
 
