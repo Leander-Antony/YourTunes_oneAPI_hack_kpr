@@ -11,7 +11,7 @@ body{
        justify-content: center;
        align-items: center;
        min-height: 100vh;
-       background: url(https://media.discordapp.net/attachments/1244223422251405366/1276850448715743242/341e800b1f29d3e34ea2eba5a6af205c.gif?ex=66cb0725&is=66c9b5a5&hm=c1e73a31fccc119196aa6c514e809abaafdfd5400a72ff3770c719c1ab658eae&=) no-repeat;
+       background: url(https://raw.githubusercontent.com/Leander-Antony/YourTunes_oneAPI_hack_kpr/main/static/image/bg.gif?token=GHSAT0AAAAAACVS2AJPCW5TT577UXMGRHWQZWLC5WQ) no-repeat;
        background-size: cover;
        background-position: center;
        
@@ -30,7 +30,7 @@ body{
     color: aliceblue;
     box-shadow: 10px;
     background-color: rgba(0, 0, 0, 0.5);
-    box-shadow: inset -5px -5px rgba(0, 0, 0, 0.5);
+   
 }
 
 .logo, .words, .button {
