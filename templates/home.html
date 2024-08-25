@@ -43,6 +43,14 @@
             {{ tracks_html|safe }}
         </div>
     </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content" id="popupContent">
+            <p></p>
+            <div class="loader"></div>
+        </div>
+    </div> 
+        
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
        
 </body>
