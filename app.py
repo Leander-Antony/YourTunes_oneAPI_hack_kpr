@@ -250,8 +250,14 @@ def home():
     
 @app.route('/callback')
 def callback():
-    sp_oauth.get_access_token(request.args['code'])
-    return redirect(url_for('home'))
+    if 'code' in request.args:
+        sp_oauth.get_access_token(request.args['code'])
+        return redirect(url_for('home'))
+    else:
+        error_message = request.args.get('error', 'Authorization was cancelled or failed.')
+        print(f"Error during authorization: {error_message}")
+        return render_template('error.html', error_message=error_message)
+
 
 @app.route('/create_playlist', methods=['POST'])
 def create_playlist_from_input():

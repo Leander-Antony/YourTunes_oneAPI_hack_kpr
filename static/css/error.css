@@ -1,0 +1,71 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 35px;
+    box-sizing: border-box;
+    background: url("/static/image/bg.gif") no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+}
+
+/* Container for Content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top: 60px;
+    background-color: rgba(0, 0, 0, 0.5);
+    min-height: calc(100vh - 40px);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+
+
+.form-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    height: 130px;
+    width: 800px;
+    margin: 0 auto 20px auto;
+}
+
+.greeting {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.form-container p {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+
+.input-fields {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.logout-button {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #FF0000;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+}
+
+.logout-button:hover {
+    background-color: #cc0000;
+}
