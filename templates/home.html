@@ -24,25 +24,39 @@
         </div>
         
         <div class="content-container">
-            <h2 class="section-title">Your Top Artists</h2>
-            <div class="artist-carousel" id="artistCarousel">
+            <h2 id="your-top-artists" class="section-title">Your Top Artists</h2>
+            <div id="artistCarousel" class="artist-carousel">
                 {% if top_artists %}
                     {% for artist in top_artists %}
-                    <div class="artist-item">
-                        <img src="{{ artist.image_url }}" alt="{{ artist.name }}" class="artist-cover">
-                        <p class="artist-name">{{ artist.name }}</p>
-                    </div>
+                        <div class="artist-item">
+                            <img src="{{ artist.image_url }}" alt="{{ artist.name }}" class="artist-cover">
+                            <div class="artist-name">{{ artist.name }}</div>
+                        </div>
                     {% endfor %}
                 {% else %}
                     <p>No top artists data available.</p>
                 {% endif %}
             </div>
         </div>
+        
         <div class="content-container">
-            <h2 class="section-title">Your Top Tracks</h2>
-            {{ tracks_html|safe }}
+            <h2 id="your-top-tracks" class="section-title">Your Top Tracks</h2>
+            <div id="trackCarousel" class="track-carousel">
+                {% if top_tracks %}
+                    {% for track in top_tracks %}
+                        <div class="track-item">
+                            <img src="{{ track.image_url }}" alt="{{ track.name }}" class="track-cover">
+                            <div class="track-info">
+                                <div class="track-name">{{ track.name }}</div>
+                                <div class="track-artist">{{ track.artist }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No top tracks data available.</p>
+                {% endif %}
+            </div>
         </div>
-    </div>
 
     <div id="popup" class="popup">
         <div class="popup-content" id="popupContent">
