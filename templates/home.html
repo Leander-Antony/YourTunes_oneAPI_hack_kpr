@@ -6,22 +6,12 @@
     <link rel="icon" href="{{ url_for('static', filename='image/logo.ico') }}" type="image/x-icon">
 </head>
 <body>
+    <div class="user-profile">
+        <img src="{{ user_profile_image }}" alt="Profile Image">
+        <a href="{{ user_profile_url }}" target="_blank">{{ user_display_name }}</a>
+    </div>
+    <a href="/logout" class="logout-button">Logout</a>
     <div class="container">
-        <div class="user-profile">
-            <div class="user-profile-info">
-                {% if user_profile_image %}
-                    <img src="{{ user_profile_image }}" alt="{{ user_display_name }}'s profile" class="profile-image">
-                {% else %}
-                    <div class="profile-image">
-                        {{ user_display_name[0] }}
-                    </div>
-                {% endif %}
-                <a href="{{ user_profile_url }}" target="_blank">{{ user_display_name }}</a>
-            </div>
-        
-            <a href="/logout" class="logout-button">Logout</a>
-        </div>
-        
         <div class="form-container">
             <div class="greeting">Hi, {{ user_display_name }}</div>
             <form action="/create_playlist" method="post">
