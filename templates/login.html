@@ -6,6 +6,7 @@
     <title>YourTunes Login</title>
     <link rel="icon" href="{{ url_for('static', filename='image/logo.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     <div class="wrapper">
@@ -17,7 +18,9 @@
             Music based on your Mood 🎵
         </div>
 
-        <a href="/home" class="button">Login</a>
+        <a href="/home" class="button">
+            <i class="fab fa-spotify"></i> Login with Spotify
+        </a>
     </div>
 </body>
 </html>
