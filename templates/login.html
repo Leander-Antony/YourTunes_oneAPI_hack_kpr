@@ -4,34 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Tunes Login</title>
-    <link rel="icon" href="{{ url_for('static', filename='image/logo.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
 </head>
 <body>
     <div class="wrapper">
-        <h1>Login</h1>
-        <div class="input-box">
-            <input type="text" name="username" placeholder="Username" required>
-            <i class='bx bxs-user-rectangle'></i>
+        <div class="logo">
+            <img src="/static/image/logo.png" width="100" height="100" alt="Logo">
         </div>
-        <div class="input-box">
-            <input type="password" name="password" placeholder="Password" required>
-            <i class='bx bxs-lock'></i>
+
+        <div class="words">
+            Music based on your Mood 🎵
         </div>
-        <div class="remember-forget">
-            <label><input type="checkbox" name="remember"> Remember Me</label>
-            <a href="#">Forget Password</a>
-        </div>
-        <div class="button-container">
-            <button type="submit" class="btn btn-login">Login</button>
-            <a href="/home" class="btn btn-spotify">Login with Spotify</a>
-                
-        </div>
-        <div class="register-link">
-            <p>Don't have an account? <a href="#">Register</a></p>
-        </div>
+
+        <a href="/home" class="button">Login</a>
     </div>
 </body>
 </html>
