@@ -67,12 +67,26 @@ document.addEventListener("DOMContentLoaded", function () {
     "The Beatles hold the record for the most number one hits on the Billboard Hot 100 chart.",
     "Mozart composed over 600 works in his lifetime, many of which are considered masterpieces.",
     "The piano was invented in Italy by Bartolomeo Cristofori in the early 1700s.",
-    "Music can help your heart: Listening to music can help your cardiovascular health. The beats can help you breathe better in rhythm with your heartbeats",
+    "A Canadian astronaut released an album of songs all recorded in space",
     "Blues music was created post-slavery: During the 1860s, a revolutionary music genre called Blues emerged in the Deep South. African-Americans birthed this unique sound, drawing inspiration from work songs and spirituals.",
     "Mozart sold more CDs than Beyonce in 2016.",
     "Rap God by Eminem, the song with a world record.",
     "Only Metallica has played in all of the 7 continents.",
   ];
+
+  const images = [
+    "/static/image/Facts/flute.jpg", 
+    "/static/image/Facts/beethoven.jpg", 
+    "/static/image/Facts/beatles.jpg", 
+    "/static/image/Facts/mozart.png", 
+    "/static/image/Facts/piano.jpg", 
+    "/static/image/Facts/canadian.png", 
+    "/static/image/Facts/blues.jpg", 
+    "/static/image/Facts/mozart_vs_beyonce.jpg", 
+    "/static/image/Facts/eminem_rapgod.jpg", 
+    "/static/image/Facts/metallica.jpg" 
+  ];
+  
 
   let factInterval;
 
@@ -84,9 +98,16 @@ document.addEventListener("DOMContentLoaded", function () {
       popup.style.display = 'flex';
 
       factInterval = setInterval(function() {
-        const randomFact = facts[Math.floor(Math.random() * facts.length)];
-        popupContent.textContent = randomFact;
+        const randomIndex = Math.floor(Math.random() * facts.length);
+        const randomFact = facts[randomIndex];
+        const relatedImage = images[randomIndex];
+
+        popupContent.innerHTML = `
+          <img src="${relatedImage}" alt="Related image" style="max-width: 100%; height: auto;">
+          <p>${randomFact}</p>
+        `;
       }, 4000);
+
 
       setTimeout(function() {
         clearInterval(factInterval);
