@@ -23,18 +23,25 @@ body{
     justify-content: center;
     text-align: center;
     width: 320px;
-    height: 300px;
+    height: 350px;
     border-radius: 10px;
     background:transparent;
-    backdrop-filter:blur(80%);
-    color: aliceblue;
+    color: #ffffff;
     box-shadow: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.097);
    
 }
+.words {
+    margin-bottom: 75px;
+    margin-top: -30px;
+    font-size: 18px;
 
-.logo, .words, .button {
-    margin-bottom: 20px;
+    
+}
+.logo{
+    margin-bottom: 75px;
+    padding-top: -50px;
+    margin-top: -40px;
 }
 
 .button {
@@ -49,9 +56,11 @@ body{
     outline: none;
     border-radius: 40px;
     padding: 10px;
+    margin-top:-50px ;
 }
    .button:hover, .button:focus, .button:active{
        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
        -webkit-transform: scale(1.1);
        transform: scale(1.1)
    }
+
