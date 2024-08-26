@@ -65,11 +65,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "The world's oldest known musical instruments are flutes dating back over 40,000 years.",
     "They say Elizabeth Taylor helped in popularizing Michael Jackson’s title as the King of Pop.",
     "The Beatles hold the record for the most number one hits on the Billboard Hot 100 chart.",
-    "Mozart composed over 600 works in his lifetime, many of which are considered masterpieces.",
     "The piano was invented in Italy by Bartolomeo Cristofori in the early 1700s.",
     "A Canadian astronaut released an album of songs all recorded in space",
-    "Blues music was created post-slavery: During the 1860s, a revolutionary music genre called Blues emerged in the Deep South. African-Americans birthed this unique sound, drawing inspiration from work songs and spirituals.",
-    "Mozart sold more CDs than Beyonce in 2016.",
     "Rap God by Eminem, the song with a world record.",
     "Only Metallica has played in all of the 7 continents.",
   ];
@@ -78,11 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "/static/image/Facts/flute.jpg", 
     "/static/image/Facts/Mj.jpg", 
     "/static/image/Facts/beatles.jpg", 
-    "/static/image/Facts/mozart.jpg", 
     "/static/image/Facts/ilayraja.jpg", 
     "/static/image/Facts/astrounat.jpg", 
-    "/static/image/Facts/blues.jpg", 
-    "/static/image/Facts/mozart.jpg", 
     "/static/image/Facts/eminem.png", 
     "/static/image/Facts/world.png" 
   ];
