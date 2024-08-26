@@ -47,6 +47,7 @@ body{
 }
 
 .button {
+    font-family: 'Jersey 10', sans-serif; 
     display: inline-block;
     text-decoration: none;
     color: black;
@@ -59,6 +60,7 @@ body{
     border-radius: 40px;
     padding: 10px;
     margin-top:-50px ;
+
 }
 
 .button:hover, .button:focus, .button:active{
