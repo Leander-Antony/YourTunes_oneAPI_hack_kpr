@@ -10,16 +10,7 @@ body {
     color: white;
 }
 
-.container {
-    max-width: 1200px; /* Adjust this value as needed */
-    margin: 0 auto;
-    padding: 20px;
-    padding-top: 60px;
-    background-color: rgba(0, 0, 0, 0.5);
-    min-height: calc(100vh - 40px); /* Subtracting body padding */
-    border-radius: 10px; /* Optional: adds rounded corners */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Optional: adds a subtle shadow */
-}
+
 .user-profile {
     position: absolute;
     top: 5px;
@@ -28,8 +19,8 @@ body {
 }
 
 .user-profile img {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     margin-right: 10px;
 }
@@ -39,8 +30,8 @@ body {
     position:absolute;
     top:10px;
     text-decoration: none;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 25px;
+    
 }
 
 .logout-button {
@@ -55,7 +46,7 @@ body {
 }
 
 .form-container {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
     padding: 20px;
     border-radius: 5px;
     margin-bottom: 20px;
@@ -68,7 +59,7 @@ body {
 .greeting {
     text-align: center;
     font-size: 24px;
-    font-weight: bold;
+   
     margin-bottom: 20px;
 }
 
@@ -82,10 +73,10 @@ body {
 .form-container .input-field {
     width: 200px;
     padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 3px;
     font-size: 14px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color:  rgba(0, 0, 0, 0.3);
     color: white;
 }
 
@@ -94,7 +85,7 @@ body {
 }
 
 .form-container input[type="submit"] {
-    background-color: #FF0000;
+    background-color: #6b4ba5;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -110,7 +101,7 @@ body {
 }
 
 .content-container {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
     padding: 20px;
     border-radius: 5px;
     overflow: hidden;
