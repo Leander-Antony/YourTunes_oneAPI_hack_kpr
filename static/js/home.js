@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const facts = [
     "The world's oldest known musical instruments are flutes dating back over 40,000 years.",
-    "Beethoven continued to compose music even after he became completely deaf.",
+    "They say Elizabeth Taylor helped in popularizing Michael Jackson’s title as the King of Pop.",
     "The Beatles hold the record for the most number one hits on the Billboard Hot 100 chart.",
     "Mozart composed over 600 works in his lifetime, many of which are considered masterpieces.",
     "The piano was invented in Italy by Bartolomeo Cristofori in the early 1700s.",
@@ -76,15 +76,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const images = [
     "/static/image/Facts/flute.jpg", 
-    "/static/image/Facts/beethoven.jpg", 
+    "/static/image/Facts/Mj.jpg", 
     "/static/image/Facts/beatles.jpg", 
-    "/static/image/Facts/mozart.png", 
-    "/static/image/Facts/piano.jpg", 
-    "/static/image/Facts/canadian.png", 
+    "/static/image/Facts/mozart.jpg", 
+    "/static/image/Facts/ilayraja.jpg", 
+    "/static/image/Facts/astrounat.jpg", 
     "/static/image/Facts/blues.jpg", 
-    "/static/image/Facts/mozart_vs_beyonce.jpg", 
-    "/static/image/Facts/eminem_rapgod.jpg", 
-    "/static/image/Facts/metallica.jpg" 
+    "/static/image/Facts/mozart.jpg", 
+    "/static/image/Facts/eminem.png", 
+    "/static/image/Facts/world.png" 
   ];
   
 
