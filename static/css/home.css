@@ -1,5 +1,5 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font: jersey10;
     margin: 0;
     padding: 35px;
     box-sizing: border-box;
@@ -184,6 +184,7 @@ body {
     color: white; 
     text-align: center;
     font-size: 32px;
+    
 }
 
 .loader {
@@ -253,3 +254,5 @@ body {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
 }
+
+  

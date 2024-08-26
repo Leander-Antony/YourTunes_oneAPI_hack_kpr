@@ -34,7 +34,9 @@ body{
 .words {
     margin-bottom: 75px;
     margin-top: -30px;
-    font-size: 18px;
+    font-size: 24px;
+    font-family: 'Jersey 10', sans-serif;
+
 
     
 }
@@ -58,9 +60,9 @@ body{
     padding: 10px;
     margin-top:-50px ;
 }
-   .button:hover, .button:focus, .button:active{
+
+.button:hover, .button:focus, .button:active{
        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
        -webkit-transform: scale(1.1);
        transform: scale(1.1)
-   }
-
+}

@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "A Canadian astronaut released an album of songs all recorded in space",
     "Rap God by Eminem, the song with a world record.",
     "Only Metallica has played in all of the 7 continents.",
+    "Legend has it that Leo Fender, the creator of some of the world's most popular electric guitars, didn't play guitar and didn't know how to tune one. However, he did play the saxophone and dabbled in the piano.",
   ];
 
   const images = [
@@ -78,7 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "/static/image/Facts/ilayraja.jpg", 
     "/static/image/Facts/astrounat.jpg", 
     "/static/image/Facts/eminem.png", 
-    "/static/image/Facts/world.png" 
+    "/static/image/Facts/world.png", 
+    "static/image/Facts/guitar.jpg"
   ];
   
 
@@ -114,3 +116,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
