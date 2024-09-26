@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Spotify Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-</head>
+    <head>
+        <title>Home</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+        <link rel="icon" href="{{ url_for('static', filename='image/logo.ico') }}" type="image/x-icon">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Jersey 10', sans-serif;
+                letter-spacing: 1.5px;
+            }
+        </style>
+    </head>
 <body>
     <div class="user-profile">
         <img src="{{ user_profile_image }}" alt="Profile Image">
@@ -22,14 +30,7 @@
             <form action="{{ url_for('create_playlist_from_input') }}" method="post">
                 <div class="input-fields">
                     <input type="text" name="mood" placeholder="Enter your mood" required class="input-field">
-                    <select name="language" required class="input-field">
-                        <option value="">Select language</option>
-                        <option value="English">English</option>
-                        <option value="Spanish">Spanish</option>
-                        <option value="French">French</option>
-                        <option value="German">German</option>
-                        <option value="Italian">Italian</option>
-                    </select>
+                    <input type="text" id="language" name="language" class="input-field" placeholder="Language" required>
                     <input type="submit" value="Create Playlist" class="submit-button">
                 </div>
             </form>
