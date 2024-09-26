@@ -7,19 +7,25 @@ from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
 from flask import Flask, session, redirect, url_for, request, render_template
-from beyondllm import retrieve, generator, source
+from beyondllm import retrieve, generator
+from beyondllm.source import fit
 import re
 from beyondllm.embeddings import GeminiEmbeddings
 from beyondllm.llms import GeminiModel
+# from beyondllm.llms import OllamaModel
+# from beyondllm.llms import HuggingFaceHubModel
 
 load_dotenv()
 client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
 google_api = os.getenv('GOOGLE_API_KEY')
 
-embed_model = GeminiEmbeddings(model_name="models/embedding-001")
-llm = GeminiModel(model_name="gemini-pro")
-data = source.fit(path="data/text.txt", dtype="pdf", chunk_size=512, chunk_overlap=0)
+
+embed_model = GeminiEmbeddings(api_key=google_api, model_name="models/embedding-001")
+llm = GeminiModel(model_name="gemini-pro") 
+# llm = OllamaModel(model="wizardlm2")
+# llm = HuggingFaceHubModel(model="TheBloke/WizardLM-13B-Uncensored-AWQ",token="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",model_kwargs={"max_new_tokens":512,"temperature":0.1})
+data = fit(path="data/text.md", dtype="md", chunk_size=512, chunk_overlap=100)
 retriever = retrieve.auto_retriever(data=data, embed_model=embed_model, type="normal", top_k=4)
 
 app = Flask(__name__)
@@ -114,7 +120,7 @@ def songs_from_top_artists(user_input):
     artists_name = [(artist['name']) for artist in top_artists['items']]
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 25 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
+        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 2 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
@@ -122,6 +128,7 @@ def songs_from_top_artists(user_input):
     if response:
         songs = extract_songs(response)
         print("Getting Songs from top artists")
+        print(songs)
         return songs
 
     return []
@@ -130,7 +137,7 @@ def songs_from_top_artists(user_input):
 def playlist_generator(user_input, prferred_language):
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 50 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
+        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 5 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
@@ -138,6 +145,7 @@ def playlist_generator(user_input, prferred_language):
     if response:
         songs = extract_songs(response)
         print("Generating sonngs based on user's input")
+        print(songs)
         return songs
     
     return []
@@ -173,6 +181,44 @@ def playlist_description_generator(user_input, name):
     response = safe_call(pipeline)
     print(response)
     return response
+
+def analyze_playlist_moods(songs):
+    mood_count = {}
+
+    # Create a prompt that includes all songs, explicitly asking for moods only
+    song_list = ', '.join(songs)
+    prompt = f"Analyze the moods of the following songs and provide only the mood names: {song_list}. " \
+             "Respond with the mood names separated by commas without any song titles."
+
+    # Generate the mood analysis response
+    pipeline = generator.Generate(
+        question=prompt,
+        system_prompt="Provide only the mood names, one for each song.",
+        retriever=retriever,
+        llm=llm
+    )
+    response = safe_call(pipeline)
+    
+    # Split the response by commas and strip whitespace
+    moods = [mood.strip() for mood in response.split(',')]
+
+    # Update mood counts based on the analyzed moods
+    for mood in moods:
+        if mood:  # Check if mood is not empty
+            if mood in mood_count:
+                mood_count[mood] += 1
+            else:
+                mood_count[mood] = 1
+
+    # Calculate percentages
+    total_songs = len(moods)
+    mood_percentages = {mood: (count / total_songs) * 100 for mood, count in mood_count.items()}
+    
+    print(f"Analyzed playlist mood percentages: {mood_percentages}")
+    return mood_percentages
+
+        
+
 
 @app.route('/')
 def login():
@@ -261,29 +307,37 @@ def callback():
 
 @app.route('/create_playlist', methods=['POST'])
 def create_playlist_from_input():
+    # Validate Spotify token
     if not sp_oauth.validate_token(cache_handler.get_cached_token()):
         return redirect(sp_oauth.get_authorize_url())
 
+    # Retrieve user input for mood and preferred language
     user_input = request.form.get('mood')
     preferred_language = request.form.get('language')
 
-    if not input or not preferred_language:
+    # Check for missing user input
+    if not user_input or not preferred_language:
         return "Mood or language not provided.", 400
 
-    # Get songs based on mood
+    # Get songs based on user mood
     playlist_songs = playlist_generator(user_input, preferred_language)
     if not playlist_songs:
         return "No songs generated for the playlist.", 500
 
-    # Get additional songs from top artists
+    # Fetch additional songs from top artists
     top_artists_songs = songs_from_top_artists(user_input)
     if not top_artists_songs:
         return "No songs from top artists generated.", 500
 
-    # Combine both song lists
+    # Combine both song lists into one
     all_songs = playlist_songs + top_artists_songs
     if not all_songs:
         return "No songs available for the playlist.", 500
+
+    # Analyze moods of the combined songs
+    mood_results = analyze_playlist_moods(all_songs)  # Get mood counts
+    print("Mood analysis results:", mood_results)
+    print("Type of mood_results:", type(mood_results))
 
     # Generate playlist name and description
     name = playlist_name_generator(all_songs, user_input)
@@ -295,7 +349,7 @@ def create_playlist_from_input():
         description = "A playlist created based on your mood."
 
     try:
-        # Create the playlist
+        # Create the Spotify playlist
         playlist = sp.user_playlist_create(user=sp.current_user()['id'], name=name, description=description, public=True, collaborative=False)
         playlist_id = playlist['id']
         playlist_url = playlist['external_urls']['spotify']
@@ -309,30 +363,41 @@ def create_playlist_from_input():
             if song_info:
                 track_ids.append(song_info['uri'])
 
+        # Add tracks to the playlist if any track IDs were found
         if track_ids:
             sp.playlist_add_items(playlist_id, track_ids)
 
-        # Fetch the cover image URL (optional, for verification)
+        # Fetch the cover image URL (optional)
         playlist_cover_image = sp.playlist_cover_image(playlist_id)
         cover_image_url = playlist_cover_image[0]['url'] if playlist_cover_image else 'No image available'
 
-        return redirect(url_for('your_tunes', playlist_id=playlist_id, playlist_url=playlist_url, cover_image_url=cover_image_url))
+        # Redirect to your tunes page with results
+        return redirect(url_for('your_tunes', 
+                                playlist_id=playlist_id, 
+                                playlist_url=playlist_url, 
+                                cover_image_url=cover_image_url, 
+                                mood_results=json.dumps(mood_results)))  # Pass mood results as JSON
     except Exception as e:
         print(f"Error creating playlist: {e}")
         return "Error creating playlist. Please try again.", 500
 
 
-
 @app.route('/yourtunes')
 def your_tunes():
+    # Retrieve parameters from the query string
     playlist_id = request.args.get('playlist_id')
     playlist_url = request.args.get('playlist_url')
     cover_image_url = request.args.get('cover_image_url')
 
-    if not playlist_id or not playlist_url:
-        return "No playlist information available.", 400
+    # Get mood results from query parameters (default to an empty dictionary)
+    mood_results = json.loads(request.args.get('mood_results', '{}'))  # Parse JSON string to dict
 
-    return render_template('yourtunes.html', playlist_id=playlist_id, playlist_url=playlist_url, cover_image_url=cover_image_url)
+    # Render the yourtunes template with the gathered data
+    return render_template('yourtunes.html', 
+                           playlist_id=playlist_id, 
+                           playlist_url=playlist_url, 
+                           cover_image_url=cover_image_url, 
+                           mood_results=mood_results)
 
 
 @app.route('/logout')
