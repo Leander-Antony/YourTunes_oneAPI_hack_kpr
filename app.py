@@ -12,7 +12,7 @@ from beyondllm.source import fit
 import re
 from beyondllm.embeddings import GeminiEmbeddings
 from beyondllm.llms import GeminiModel
-# from beyondllm.llms import OllamaModel
+from beyondllm.llms import OllamaModel
 # from beyondllm.llms import HuggingFaceHubModel
 
 load_dotenv()
@@ -23,7 +23,7 @@ google_api = os.getenv('GOOGLE_API_KEY')
 
 embed_model = GeminiEmbeddings(api_key=google_api, model_name="models/embedding-001")
 llm = GeminiModel(model_name="gemini-pro") 
-# llm = OllamaModel(model="wizardlm2")
+llm2 = OllamaModel(model="wizardlm2")
 # llm = HuggingFaceHubModel(model="TheBloke/WizardLM-13B-Uncensored-AWQ",token="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",model_kwargs={"max_new_tokens":512,"temperature":0.1})
 data = fit(path="data/text.md", dtype="md", chunk_size=512, chunk_overlap=100)
 retriever = retrieve.auto_retriever(data=data, embed_model=embed_model, type="normal", top_k=4)
@@ -120,7 +120,7 @@ def songs_from_top_artists(user_input):
     artists_name = [(artist['name']) for artist in top_artists['items']]
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 2 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
+        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 10 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
@@ -137,7 +137,7 @@ def songs_from_top_artists(user_input):
 def playlist_generator(user_input, prferred_language):
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 50 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
+        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 30 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
@@ -182,7 +182,7 @@ def playlist_description_generator(user_input, name):
     print(response)
     return response
 
-def analyze_playlist_moods(songs):
+def analyze_playlist_moods(songs, max_moods=5):
     mood_count = {}
 
     # Create a prompt that includes all songs, explicitly asking for moods only
@@ -213,10 +213,36 @@ def analyze_playlist_moods(songs):
     # Calculate percentages
     total_songs = len(moods)
     mood_percentages = {mood: (count / total_songs) * 100 for mood, count in mood_count.items()}
-    
-    print(f"Analyzed playlist mood percentages: {mood_percentages}")
-    return mood_percentages
 
+    # Group similar moods together (simplified version)
+    mood_groups = {
+        'Stress': ['Stressful', 'Pressure', 'Stressed'],
+        'Positive': ['Hopeful', 'Motivated', 'Upbeat'],
+        'Sadness': ['Sad', 'Heartbroken'],
+        'Calm': ['Calm'],
+        'Empowered': ['Empowered', 'Brave', 'Strong', 'Unstoppable'],
+        'Anxiety': ['Anxious'],
+        'Other': ['Humorous', 'Demonic', 'Unbelievable', 'Searching', 'Rising']
+    }
+
+    # Group and sum up percentages
+    grouped_moods = {}
+    for group, moods in mood_groups.items():
+        group_percentage = sum(mood_percentages.get(mood, 0) for mood in moods)
+        if group_percentage > 0:
+            grouped_moods[group] = group_percentage
+
+    # Sort moods by percentage and limit to top max_moods
+    top_moods = dict(sorted(grouped_moods.items(), key=lambda x: x[1], reverse=True)[:max_moods])
+
+    # Adjust to ensure total adds up to 100% (fix rounding errors)
+    total_percentage = sum(top_moods.values())
+    if total_percentage < 100:
+        # Find the mood with the highest percentage and add the remaining difference
+        max_mood = max(top_moods, key=top_moods.get)
+        top_moods[max_mood] += (100 - total_percentage)
+
+    return top_moods
         
 
 
@@ -257,7 +283,7 @@ def home():
         user_profile = sp.current_user()
         user_display_name = user_profile['display_name']
         user_profile_url = user_profile['external_urls']['spotify']
-        user_images = user_profile.get('images', [])
+        user_images = user_profile.get('images', [])    
         user_profile_image = user_images[0]['url'] if user_images else None
 
         # Fetch user's top artists
@@ -335,9 +361,8 @@ def create_playlist_from_input():
         return "No songs available for the playlist.", 500
 
     # Analyze moods of the combined songs
-    mood_results = analyze_playlist_moods(all_songs)  # Get mood counts
+    mood_results = analyze_playlist_moods(all_songs)  # Get reduced mood counts
     print("Mood analysis results:", mood_results)
-    print("Type of mood_results:", type(mood_results))
 
     # Generate playlist name and description
     name = playlist_name_generator(all_songs, user_input)
