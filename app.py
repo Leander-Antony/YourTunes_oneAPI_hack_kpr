@@ -137,7 +137,7 @@ def songs_from_top_artists(user_input):
 def playlist_generator(user_input, prferred_language):
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 5 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
+        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 50 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )

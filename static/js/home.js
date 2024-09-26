@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initial setup
     updateCarousel();
 
-    // Auto-scroll every 4 seconds
+    // Auto-scroll every 2 seconds
     let scrollInterval = setInterval(scrollCarousel, 2000);
 
     // Pause animation on hover
@@ -49,7 +49,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     carousel.addEventListener('mouseleave', () => {
-      scrollInterval = setInterval(scrollCarousel, 4000);
+      scrollInterval = setInterval(scrollCarousel, 2000);
+    });
+
+    // Add click event listeners to carousel items
+    items.forEach(item => {
+      item.addEventListener('click', (event) => {
+        // Prevent the default link behavior
+        event.preventDefault();
+        
+        // Get the link URL
+        const link = item.querySelector('a');
+        if (link) {
+          // Open the link in a new tab
+          window.open(link.href, '_blank');
+        }
+      });
     });
   }
 
@@ -63,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const facts = [
     "The world's oldest known musical instruments are flutes dating back over 40,000 years.",
-    "They say Elizabeth Taylor helped in popularizing Michael Jackson’s title as the King of Pop.",
+    "They say Elizabeth Taylor helped in popularizing Michael Jackson's title as the King of Pop.",
     "The Beatles hold the record for the most number one hits on the Billboard Hot 100 chart.",
     "The piano was invented in Italy by Bartolomeo Cristofori in the early 1700s.",
     "A Canadian astronaut released an album of songs all recorded in space",
@@ -82,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "/static/image/Facts/world.png", 
     "static/image/Facts/guitar.jpg"
   ];
-  
 
   let factInterval;
 
@@ -104,7 +118,6 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
       }, 4000);
 
-
       setTimeout(function() {
         clearInterval(factInterval);
         popup.style.display = 'none';
@@ -116,4 +129,3 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
-

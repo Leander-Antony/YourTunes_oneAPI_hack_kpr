@@ -1,46 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Spotify Home</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='image/logo.ico') }}" type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Jersey 10', sans-serif;
-            font-size: 28px;
-            letter-spacing: 1.5px;
-        }
-    </style>
 </head>
 <body>
     <div class="user-profile">
         <img src="{{ user_profile_image }}" alt="Profile Image">
         <a href="{{ user_profile_url }}" target="_blank">{{ user_display_name }}</a>
     </div>
+
     <a href="/logout" class="logout-button">Logout</a>
+
     <div class="container">
         <div class="form-container">
-            <div class="greeting">Hi, {{ user_display_name }}</div>
-            <form action="/create_playlist" method="post">
+            <div class="greeting">
+                Hi, {{ user_display_name }}
+            </div>
+            <form action="{{ url_for('create_playlist_from_input') }}" method="post">
                 <div class="input-fields">
-                    <input type="text" id="mood" name="mood" class="input-field" placeholder="How do you feel today?" required>
-                    <input type="text" id="language" name="language" class="input-field" placeholder="Language" required>
-                    <input type="submit" value="Create!!">
+                    <input type="text" name="mood" placeholder="Enter your mood" required class="input-field">
+                    <select name="language" required class="input-field">
+                        <option value="">Select language</option>
+                        <option value="English">English</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="French">French</option>
+                        <option value="German">German</option>
+                        <option value="Italian">Italian</option>
+                    </select>
+                    <input type="submit" value="Create Playlist" class="submit-button">
                 </div>
             </form>
         </div>
-        
+
         <div class="content-container">
             <h2 id="your-top-artists" class="section-title">Your Top Artists</h2>
             <div id="artistCarousel" class="artist-carousel">
                 {% if top_artists %}
                     {% for artist in top_artists %}
                         <div class="artist-item">
-                            <img src="{{ artist.image_url }}" alt="{{ artist.name }}" class="artist-cover">
-                            <div class="artist-name">{{ artist.name }}</div>
+                            <a href="{{ artist.url }}" target="_blank" class="artist-link">
+                                <img src="{{ artist.image_url }}" alt="{{ artist.name }}" class="artist-cover">
+                                <div class="artist-name">{{ artist.name }}</div>
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -48,18 +52,20 @@
                 {% endif %}
             </div>
         </div>
-        
+
         <div class="content-container">
             <h2 id="your-top-tracks" class="section-title">Your Top Tracks</h2>
             <div id="trackCarousel" class="track-carousel">
                 {% if top_tracks %}
                     {% for track in top_tracks %}
                         <div class="track-item">
-                            <img src="{{ track.image_url }}" alt="{{ track.name }}" class="track-cover">
-                            <div class="track-info">
-                                <div class="track-name">{{ track.name }}</div>
-                                <div class="track-artist">{{ track.artist }}</div>
-                            </div>
+                            <a href="{{ track.url }}" target="_blank" class="track-link">
+                                <img src="{{ track.image_url }}" alt="{{ track.name }}" class="track-cover">
+                                <div class="track-info">
+                                    <div class="track-name">{{ track.name }}</div>
+                                    <div class="track-artist">{{ track.artist }}</div>
+                                </div>
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -67,16 +73,14 @@
                 {% endif %}
             </div>
         </div>
+    </div>
 
     <div id="popup" class="popup">
-        <div class="popup-content" id="popupContent">
-            <p></p>
+        <div id="popupContent" class="popup-content">
             <div class="loader"></div>
-            <div style="width:100%;height:0;padding-bottom:100%;position:relative;"><iframe src="https://giphy.com/embed/3xz2BCmCSOW9wSOw1O" width="100%" height="100%" style="position:absolute" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/gerhardfunk-3d-walk-cycle-icosahedron-3xz2BCmCSOW9wSOw1O">via GIPHY</a></p>
         </div>
-    </div> 
-        
+    </div>
+
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-       
 </body>
 </html>
