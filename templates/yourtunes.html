@@ -15,20 +15,78 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://unpkg.com/framer-motion@4.1.17/dist/framer-motion.js"></script>
     <style>
-        body {
-            font-family: 'Jersey 10', sans-serif;
-            letter-spacing: 1.5px;
-        }
-        .note {
-            position: absolute;
-            font-size: 2rem;
-            animation: floatUp 8s linear infinite;
-        }
-        @keyframes floatUp {
-            from { bottom: 0; }
-            to { bottom: 100vh; opacity: 0; }
-        }
-    </style>
+      body {
+          font-family: 'Jersey 10', sans-serif;
+          letter-spacing: 1.5px;
+          background-color: #1a1a1a;
+          color: #ffffff;
+      }
+      .note {
+          position: absolute;
+          font-size: 2rem;
+          animation: floatUp 8s linear infinite;
+      }
+      @keyframes floatUp {
+          from { bottom: 0; }
+          to { bottom: 100vh; opacity: 0; }
+      }
+      .progress-container {
+        width: 100px;
+        height: 100px;
+        position: relative;
+        display: inline-block;
+        margin: 10px;
+      }
+      .circular-progress {
+        position: relative;
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: conic-gradient(
+          #4d5bf9 calc(var(--percentage) * 3.6deg),
+          transparent calc(var(--percentage) * 3.6deg)
+        );
+      }
+
+    .circular-progress::before {
+      content: "";
+      position: absolute;
+      height: 80px;
+      width: 80px;
+      border-radius: 50%;
+      background-color: #1f1f1f;
+  }
+      .circular-progress::after {
+          content: "";
+          position: absolute;
+          inset: 5px;
+          border-radius: 50%;
+          border: 5px solid transparent;
+          
+          transform: rotate(calc(3.6deg * var(--percentage)));
+          animation: growProgressBar 1s ease-out forwards;
+      }
+      @keyframes growProgressBar {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(calc(3.6deg * var(--percentage))); }
+      }
+      .progress-value {
+        position: relative;
+        font-size: 20px;
+        font-weight: 600;
+        color: #4d5bf9;
+    }
+
+      .mood-label {
+          text-align: center;
+          margin-top: 5px;
+          font-weight: bold;
+          color: #fff;
+      }
+  </style>
 </head>
 <body>
     <h1>Music's in the mix! Tap play and turn up!</h1>
@@ -94,20 +152,31 @@
       <div class="bar"></div>
     </div>
 
-<div id="mood-list">
-    {% if mood_results %}
-        {% for mood, percentage in mood_results.items() %}
-            <div class="progress-container">
-                <div class="circular-progress" style="--percentage: {{ percentage }};"></div>
-                <div class="progress-value">{{ percentage|round(2) }}%</div>
-                <div class="mood-label">{{ mood }}</div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>No mood data available.</p>
-    {% endif %}
-</div>
+    <div id="mood-list">
+      {% if mood_results %}
+          {% for mood, percentage in mood_results.items() %}
+              <div class="progress-container">
+                  <div class="circular-progress" style="--percentage: {{ percentage }};">
+                      <div class="progress-value">{{ percentage|round(1) }}%</div>
+                  </div>
+                  <div class="mood-label">{{ mood }}</div>
+              </div>
+          {% endfor %}
+      {% else %}
+          <p>No mood data available.</p>
+      {% endif %}
+  </div>
 
+    <script>
+        // This script ensures that the progress bars are rendered correctly
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.circular-progress');
+            progressBars.forEach(bar => {
+                const percentage = parseFloat(bar.style.getPropertyValue('--percentage'));
+                bar.style.setProperty('--percentage', Math.min(100, Math.max(0, percentage)));
+            });
+        });
+    </script>
 
 </body>
 </html>

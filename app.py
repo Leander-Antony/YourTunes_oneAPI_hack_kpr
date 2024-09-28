@@ -23,7 +23,7 @@ google_api = os.getenv('GOOGLE_API_KEY')
 
 embed_model = GeminiEmbeddings(api_key=google_api, model_name="models/embedding-001")
 llm = GeminiModel(model_name="gemini-pro") 
-llm2 = OllamaModel(model="wizardlm2")
+# llm2 = OllamaModel(model="wizardlm2")
 # llm = HuggingFaceHubModel(model="TheBloke/WizardLM-13B-Uncensored-AWQ",token="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",model_kwargs={"max_new_tokens":512,"temperature":0.1})
 data = fit(path="data/text.md", dtype="md", chunk_size=512, chunk_overlap=100)
 retriever = retrieve.auto_retriever(data=data, embed_model=embed_model, type="normal", top_k=4)
