@@ -11,7 +11,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     background-color: #161b16;
     background: url("/static/image/bg.gif") no-repeat;
     background-size: cover;
@@ -27,7 +27,7 @@ body {
 
 h1 {
     text-align: center;
-    height: 70px;
+    height: 90px;
     color: rgb(249, 255, 245);
     font-size: 50px;
 }
@@ -54,11 +54,9 @@ h1 {
     display: inline-block;
     margin-top: 18px;
     background-image: linear-gradient(to right , #F5DEB3, #FFF0F5);
-    font-size:25px ;
+    font-size: 25px;
     font-family: 'Jersey 10', sans-serif;               
 }
-
-
 
 .note {
     position: absolute;
@@ -75,12 +73,9 @@ h1 {
 }
 
 @keyframes drift {
-
-    0%,
-    100% {
+    0%, 100% {
         transform: translateX(0);
     }
-
     50% {
         transform: translateX(50px);
     }
@@ -104,65 +99,87 @@ h1 {
 }
 
 @keyframes up_down {
-    0% {
+    0%, 100% {
         height: 2px;
     }
-
     50% {
         height: 80px;
     }
-
-    100% {
-        height: 2px;
-    }
 }
 
-.music .bar:nth-child(1) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 1s;
+.music .bar:nth-child(1) { animation-delay: 1s; }
+.music .bar:nth-child(2) { animation-delay: 0.8s; }
+.music .bar:nth-child(3) { animation-delay: 0.6s; }
+.music .bar:nth-child(4) { animation-delay: 0.4s; background-color: rgb(255, 249, 239); }
+.music .bar:nth-child(5) { animation-delay: 0.2s; }
+.music .bar:nth-child(6) { animation-delay: 0s; }
+.music .bar:nth-child(7) { animation-delay: 0.2s; }
+.music .bar:nth-child(8) { animation-delay: 0.4s; }
+.music .bar:nth-child(9) { animation-delay: 0.6s; }
+.music .bar:nth-child(10) { animation-delay: 0.8s; }
+
+#mood-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
-.music .bar:nth-child(2) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 0.8s;
+.progress-container {
+    position: relative;
+    width: 150px;
+    height: 180px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.music .bar:nth-child(3) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 0.6s;
+.circular-progress {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.music .bar:nth-child(4) {
-    background-color: rgb(255, 249, 239);
-    animation-delay: 0.4s;
+.circular-progress::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    border: 10px solid rgba(255, 255, 255, 0.1);
 }
 
-.music .bar:nth-child(5) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 0.2s;
+.circular-progress::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    border: 10px solid transparent;
+    border-top: 10px solid #00ffcc;
+    transform: rotate(0deg);
+    transition: transform 1s ease-in-out;
 }
 
-.music .bar:nth-child(6) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 0s;
+.circular-progress.animate::after {
+    transform: rotate(calc(3.6deg * var(--percentage, 0)));
 }
 
-.music .bar:nth-child(7) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 0.2s;
+.progress-value {
+    position: relative;
+    font-size: 24px;
+    font-weight: bold;
+    color: #00ffcc;
+    text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
 }
 
-.music .bar:nth-child(8) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 0.4s;
-}
-
-.music .bar:nth-child(9) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 0.6s;
-}
-
-.music .bar:nth-child(10) {
-    background-color: rgb(255, 255, 255);
-    animation-delay: 0.8s;
+.mood-label {
+    font-size: 16px;
+    color: #ffffff;
+    text-align: center;
+    margin-top: 10px;
 }

@@ -9,15 +9,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@4.1.17/dist/framer-motion.js"></script>
     <style>
         body {
-            font-family: 'Jersey 10', sans-serif;  /* Set font for the body */
-            letter-spacing: 1.5px;  /* Add letter spacing for better readability */
+            font-family: 'Jersey 10', sans-serif;
+            letter-spacing: 1.5px;
+        }
+        .note {
+            position: absolute;
+            font-size: 2rem;
+            animation: floatUp 8s linear infinite;
+        }
+        @keyframes floatUp {
+            from { bottom: 0; }
+            to { bottom: 100vh; opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <h1>Music’s in the mix! Tap play and turn up!</h1>
+    <h1>Music's in the mix! Tap play and turn up!</h1>
 
     <!-- Animated musical notes -->
     <div class="note" style="left: 20%; animation-duration: 4s">♪</div>
@@ -80,22 +94,20 @@
       <div class="bar"></div>
     </div>
 
-    <!-- Section for mood analysis results -->
-    <div class="mood-results">
-      <h2>Mood Analysis Results</h2>
-      <ul id="mood-list">
-        {% if mood_results %}
-          {% for mood, percentage in mood_results.items() %}
-            <li>{{ mood }}: {{ percentage|round(2) }}%</li>
-          {% endfor %}
-        {% else %}
-          <li>No mood data available.</li>
-        {% endif %}
-      </ul>
-    </div>
+<div id="mood-list">
+    {% if mood_results %}
+        {% for mood, percentage in mood_results.items() %}
+            <div class="progress-container">
+                <div class="circular-progress" style="--percentage: {{ percentage }};"></div>
+                <div class="progress-value">{{ percentage|round(2) }}%</div>
+                <div class="mood-label">{{ mood }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No mood data available.</p>
+    {% endif %}
+</div>
 
-    <a href="{{ url_for('home') }}">
-      <button class="home-btn">Home</button>
-    </a>
+
 </body>
 </html>
