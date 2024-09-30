@@ -4,6 +4,10 @@
     padding: 0;
 }
 
+.h1{
+    font-size: 24px;
+}
+
 body {
     display: flex;
     flex-direction: column;
@@ -11,7 +15,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Jersey 10', sans-serif;
     background-color: #161b16;
     background: url("/static/image/bg.gif") no-repeat;
     background-size: cover;
@@ -29,7 +33,7 @@ h1 {
     text-align: center;
     height: 90px;
     color: rgb(249, 255, 245);
-    font-size: 50px;
+    font-size: 10px;
 }
 
 .playlist-container {
@@ -86,8 +90,8 @@ h1 {
     align-items: center;
     justify-content: space-between;
     position: relative;
-    width: 300px;
-    height: 200px;
+    width: 500px;
+    height: 500px;
 }
 
 .music .bar {
