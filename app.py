@@ -137,7 +137,7 @@ def songs_from_top_artists(user_input):
 def playlist_generator(user_input, prferred_language):
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 30 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line.",
+        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 30 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line and i need you convert the name of the song to english text.",
         retriever=retriever,
         llm=llm
     )
@@ -241,6 +241,9 @@ def analyze_playlist_moods(songs, max_moods=5):
         # Find the mood with the highest percentage and add the remaining difference
         max_mood = max(top_moods, key=top_moods.get)
         top_moods[max_mood] += (100 - total_percentage)
+        print(top_moods)
+    else:
+        return {'A error occured': 00.0}
 
     return top_moods
         
