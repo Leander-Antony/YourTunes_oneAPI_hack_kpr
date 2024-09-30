@@ -15,12 +15,7 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://unpkg.com/framer-motion@4.1.17/dist/framer-motion.js"></script>
     <style>
-      body {
-          font-family: 'Jersey 10', sans-serif;
-          letter-spacing: 1.5px;
-          background-color: #1a1a1a;
-          color: #ffffff;
-      }
+      
       .note {
           position: absolute;
           font-size: 2rem;
@@ -86,10 +81,67 @@
           font-weight: bold;
           color: #fff;
       }
-  </style>
+
+      /* Home button style */
+      .home-btn {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          font-size: 2rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: white;
+      }
+
+      .home-btn:hover {
+          transform: scale(1.1);
+      }
+
+      /* Music bars and heading adjustments */
+      .music {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        height: 150px;
+        width: 100%;
+      }
+
+      .bar {
+        background-color: #4d5bf9;
+        width: 10px;
+        height: 20px; /* Reduced height */
+        margin: 0 4px;
+        animation: bounce 1s infinite;
+      }
+
+      .bar:nth-child(2) { animation-delay: 0.1s; }
+      .bar:nth-child(3) { animation-delay: 0.2s; }
+      .bar:nth-child(4) { animation-delay: 0.3s; }
+      .bar:nth-child(5) { animation-delay: 0.4s; }
+      .bar:nth-child(6) { animation-delay: 0.5s; }
+      .bar:nth-child(7) { animation-delay: 0.6s; }
+      .bar:nth-child(8) { animation-delay: 0.7s; }
+      .bar:nth-child(9) { animation-delay: 0.8s; }
+      .bar:nth-child(10) { animation-delay: 0.9s; }
+
+      @keyframes bounce {
+        0%, 100% { transform: scaleY(1); }
+        50% { transform: scaleY(0.3); }
+      }
+
+      
+
+    </style>
 </head>
 <body>
-    <h1>Music's in the mix! Tap play and turn up!</h1>
+    <!-- Home button -->
+    <a href="{{ url_for('home') }}">
+      <button class="home-btn">🏠︎ Home</button>
+    </a>
+
+    <h1 class="h1">Music's in the mix! Tap play and turn up!</h1>
 
     <!-- Animated musical notes -->
     <div class="note" style="left: 20%; animation-duration: 4s">♪</div>
