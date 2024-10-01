@@ -15,133 +15,123 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://unpkg.com/framer-motion@4.1.17/dist/framer-motion.js"></script>
     <style>
-      
-      .note {
-          position: absolute;
-          font-size: 2rem;
-          animation: floatUp 8s linear infinite;
-      }
-      @keyframes floatUp {
-          from { bottom: 0; }
-          to { bottom: 100vh; opacity: 0; }
-      }
-      .progress-container {
-        width: 100px;
-        height: 100px;
-        position: relative;
-        display: inline-block;
-        margin: 10px;
-      }
-      .circular-progress {
-        position: relative;
-        height: 100px;
-        width: 100px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: conic-gradient(
-          #4d5bf9 calc(var(--percentage) * 3.6deg),
-          transparent calc(var(--percentage) * 3.6deg)
-        );
-      }
-
-    .circular-progress::before {
-      content: "";
-      position: absolute;
-      height: 80px;
-      width: 80px;
-      border-radius: 50%;
-      background-color: #1f1f1f;
-  }
-      .circular-progress::after {
-          content: "";
-          position: absolute;
-          inset: 5px;
-          border-radius: 50%;
-          border: 5px solid transparent;
-          
-          transform: rotate(calc(3.6deg * var(--percentage)));
-          animation: growProgressBar 1s ease-out forwards;
-      }
-      @keyframes growProgressBar {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(calc(3.6deg * var(--percentage))); }
-      }
-      .progress-value {
-        position: relative;
-        font-size: 20px;
-        font-weight: 600;
-        color: #4d5bf9;
-    }
-
-      .mood-label {
-          text-align: center;
-          margin-top: 5px;
-          font-weight: bold;
-          color: #fff;
-      }
-
-      /* Home button style */
-      .home-btn {
-          position: absolute;
-          top: 10px;
-          left: 10px;
-          font-size: 2rem;
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: white;
-      }
-
-      .home-btn:hover {
-          transform: scale(1.1);
-      }
-
-      /* Music bars and heading adjustments */
-      .music {
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: flex-end;
-        height: 150px;
-        width: 100%;
-      }
-
-      .bar {
-        background-color: #4d5bf9;
-        width: 10px;
-        height: 20px; /* Reduced height */
-        margin: 0 4px;
-        animation: bounce 1s infinite;
-      }
-
-      .bar:nth-child(2) { animation-delay: 0.1s; }
-      .bar:nth-child(3) { animation-delay: 0.2s; }
-      .bar:nth-child(4) { animation-delay: 0.3s; }
-      .bar:nth-child(5) { animation-delay: 0.4s; }
-      .bar:nth-child(6) { animation-delay: 0.5s; }
-      .bar:nth-child(7) { animation-delay: 0.6s; }
-      .bar:nth-child(8) { animation-delay: 0.7s; }
-      .bar:nth-child(9) { animation-delay: 0.8s; }
-      .bar:nth-child(10) { animation-delay: 0.9s; }
-
-      @keyframes bounce {
-        0%, 100% { transform: scaleY(1); }
-        50% { transform: scaleY(0.3); }
-      }
-
-      
-
+        .note {
+            position: absolute;
+            font-size: 2rem;
+            animation: floatUp 8s linear infinite;
+        }
+        @keyframes floatUp {
+            from { bottom: 0; }
+            to { bottom: 100vh; opacity: 0; }
+        }
+        .progress-container {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        .circular-progress {
+            position: relative;
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: conic-gradient(
+                #4d5bf9 calc(var(--percentage) * 3.6deg),
+                transparent calc(var(--percentage) * 3.6deg)
+            );
+        }
+        .circular-progress::before {
+            content: "";
+            position: absolute;
+            height: 80px;
+            width: 80px;
+            border-radius: 50%;
+            background-color: #1f1f1f;
+        }
+        .circular-progress::after {
+            content: "";
+            position: absolute;
+            inset: 5px;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            transform: rotate(calc(3.6deg * var(--percentage)));
+            animation: growProgressBar 1s ease-out forwards;
+        }
+        @keyframes growProgressBar {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(calc(3.6deg * var(--percentage))); }
+        }
+        .progress-value {
+            position: relative;
+            font-size: 20px;
+            font-weight: 600;
+            color: #4d5bf9;
+        }
+        .mood-label {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: bold;
+            color: #fff;
+        }
+        /* Home button style */
+        .home-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+        .home-btn:hover {
+            transform: scale(1.1);
+        }
+        /* Music bars and heading adjustments */
+        .music {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 150px;
+            width: 100%;
+        }
+        .bar {
+            background-color: #4d5bf9;
+            width: 10px;
+            height: 20px; /* Reduced height */
+            margin: 0 4px;
+            animation: bounce 1s infinite;
+        }
+        .bar:nth-child(2) { animation-delay: 0.1s; }
+        .bar:nth-child(3) { animation-delay: 0.2s; }
+        .bar:nth-child(4) { animation-delay: 0.3s; }
+        .bar:nth-child(5) { animation-delay: 0.4s; }
+        .bar:nth-child(6) { animation-delay: 0.5s; }
+        .bar:nth-child(7) { animation-delay: 0.6s; }
+        .bar:nth-child(8) { animation-delay: 0.7s; }
+        .bar:nth-child(9) { animation-delay: 0.8s; }
+        .bar:nth-child(10) { animation-delay: 0.9s; }
+        @keyframes bounce {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.3); }
+        }
     </style>
 </head>
 <body>
     <!-- Home button -->
     <a href="{{ url_for('home') }}">
-      <button class="home-btn">🏠︎ Home</button>
+        <button class="home-btn">🏠︎ Home</button>
     </a>
 
     <h1 class="h1">Music's in the mix! Tap play and turn up!</h1>
+
+    <!-- Background audio without player -->
+    <audio autoplay loop controls src="static/bg/bg.mp3"></audio>
 
     <!-- Animated musical notes -->
     <div class="note" style="left: 20%; animation-duration: 4s">♪</div>
@@ -150,74 +140,74 @@
     <div class="note" style="left: 80%; animation-duration: 7s">♩</div>
 
     <script>
-      // Function to extract playlist ID from Spotify URL
-      function getPlaylistIdFromUrl(playlist_url) {
-        if (playlist_url.includes("open.spotify.com/playlist/")) {
-          const playlistId = playlist_url.split("open.spotify.com/playlist/")[1].split("?")[0];
-          return playlistId;
-        } else {
-          return null;
+        // Function to extract playlist ID from Spotify URL
+        function getPlaylistIdFromUrl(playlist_url) {
+            if (playlist_url.includes("open.spotify.com/playlist/")) {
+                const playlistId = playlist_url.split("open.spotify.com/playlist/")[1].split("?")[0];
+                return playlistId;
+            } else {
+                return null;
+            }
         }
-      }
 
-      // Get the playlist ID from the URL passed in
-      const playlistId = getPlaylistIdFromUrl("{{ playlist_url }}");
+        // Get the playlist ID from the URL passed in
+        const playlistId = getPlaylistIdFromUrl("{{ playlist_url }}");
 
-      // If a valid playlist ID exists, create an iframe for embedding
-      if (playlistId) {
-        const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
-        const iframe = document.createElement("iframe");
-        iframe.src = embedUrl;
-        iframe.width = "55%";
-        iframe.height = "120%";
-        iframe.frameBorder = "0";
-        iframe.allowTransparency = "true";
-        iframe.allow = "encrypted-media";
+        // If a valid playlist ID exists, create an iframe for embedding
+        if (playlistId) {
+            const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
+            const iframe = document.createElement("iframe");
+            iframe.src = embedUrl;
+            iframe.width = "55%";
+            iframe.height = "120%";
+            iframe.frameBorder = "0";
+            iframe.allowTransparency = "true";
+            iframe.allow = "encrypted-media";
 
-        document.body.appendChild(iframe);  // Append iframe to body
-      } else {
-        // Display error message if the playlist URL is invalid
-        const errorMessage = document.createElement("p");
-        errorMessage.textContent = "Invalid Spotify playlist URL.";
-        document.body.appendChild(errorMessage);
-      }
+            document.body.appendChild(iframe);  // Append iframe to body
+        } else {
+            // Display error message if the playlist URL is invalid
+            const errorMessage = document.createElement("p");
+            errorMessage.textContent = "Invalid Spotify playlist URL.";
+            document.body.appendChild(errorMessage);
+        }
 
-      // Animate musical notes
-      const notes = document.querySelectorAll(".note");
-      notes.forEach((note) => {
-        note.style.animationDuration = `${Math.random() * 3 + 3}s`;
-        note.style.left = `${Math.random() * 100}vw`;
-      });
+        // Animate musical notes
+        const notes = document.querySelectorAll(".note");
+        notes.forEach((note) => {
+            note.style.animationDuration = `${Math.random() * 3 + 3}s`;
+            note.style.left = `${Math.random() * 100}vw`;
+        });
     </script>
 
     <!-- Visual representation of music bars -->
     <div class="music">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
     </div>
 
     <div id="mood-list">
-      {% if mood_results %}
-          {% for mood, percentage in mood_results.items() %}
-              <div class="progress-container">
-                  <div class="circular-progress" style="--percentage: {{ percentage }};">
-                      <div class="progress-value">{{ percentage|round(1) }}%</div>
-                  </div>
-                  <div class="mood-label">{{ mood }}</div>
-              </div>
-          {% endfor %}
-      {% else %}
-          <p>No mood data available.</p>
-      {% endif %}
-  </div>
+        {% if mood_results %}
+            {% for mood, percentage in mood_results.items() %}
+                <div class="progress-container">
+                    <div class="circular-progress" style="--percentage: {{ percentage }};">
+                        <div class="progress-value">{{ percentage|round(1) }}%</div>
+                    </div>
+                    <div class="mood-label">{{ mood }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No mood data available.</p>
+        {% endif %}
+    </div>
 
     <script>
         // This script ensures that the progress bars are rendered correctly
