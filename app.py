@@ -13,7 +13,14 @@ import re
 from beyondllm.embeddings import GeminiEmbeddings
 from beyondllm.llms import GeminiModel
 from beyondllm.llms import OllamaModel
-# from beyondllm.llms import HuggingFaceHubModel
+from transformers import MusicgenForConditionalGeneration, AutoProcessor
+import scipy
+import torch
+from pydub import AudioSegment
+# import intel_extension_for_pytorch as ipex
+
+# Check if GPU is available, else use CPU
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 load_dotenv()
 client_id = os.getenv('CLIENT_ID')
@@ -23,8 +30,8 @@ google_api = os.getenv('GOOGLE_API_KEY')
 
 embed_model = GeminiEmbeddings(api_key=google_api, model_name="models/embedding-001")
 llm = GeminiModel(model_name="gemini-pro") 
-# llm2 = OllamaModel(model="wizardlm2")
-# llm = HuggingFaceHubModel(model="TheBloke/WizardLM-13B-Uncensored-AWQ",token="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",model_kwargs={"max_new_tokens":512,"temperature":0.1})
+# llm = ipex.optimize(llm, dtype=torch.float16)
+# llm = OllamaModel(model="wizardlm2")
 data = fit(path="data/text.md", dtype="md", chunk_size=512, chunk_overlap=100)
 retriever = retrieve.auto_retriever(data=data, embed_model=embed_model, type="normal", top_k=4)
 
@@ -122,7 +129,7 @@ def songs_from_top_artists(user_input):
         question=user_input,
         system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 10 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
         retriever=retriever,
-        llm=llm
+        llm= llm
     )
     response = safe_call(pipeline)
     if response:
@@ -168,6 +175,9 @@ def playlist_name_generator(songs, user_input):
     )
     response = safe_call(pipeline)
     extracted_name = extract_playlist_name(response)
+    if extracted_name is None:
+        print("YourTunes")
+        return "YourTunes"
     print(extracted_name)
     return extracted_name
 
@@ -181,6 +191,61 @@ def playlist_description_generator(user_input, name):
     response = safe_call(pipeline)
     print(response)
     return response
+
+def generate_bg(prompt: str):
+    MUSIC_FOLDER = "static/bg"
+    
+    # Create the directory if it does not exist
+    if not os.path.exists(MUSIC_FOLDER):
+        os.makedirs(MUSIC_FOLDER)
+    
+    # Load the model and processor
+    model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
+    processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+    
+    
+    model.to(device)
+    
+    # Process the text prompt
+    inputs = processor(
+        text=[prompt],
+        padding=True,
+        return_tensors="pt",
+    )
+    
+    # Generate audio
+    audio_values = model.generate(**inputs.to(device), do_sample=True, guidance_scale=3, max_new_tokens=1024)
+    sampling_rate = model.config.audio_encoder.sampling_rate
+    
+    # Define output paths
+    output_wav = os.path.join(MUSIC_FOLDER, "musicgen_out.wav")
+    output_mp3 = os.path.join(MUSIC_FOLDER, "bg.mp3")
+    
+    # Save the generated audio as a WAV file
+    scipy.io.wavfile.write(output_wav, rate=sampling_rate, data=audio_values[0, 0].cpu().numpy())
+    
+    # Convert the WAV file to MP3 using pydub
+    wav_audio = AudioSegment.from_wav(output_wav)
+    wav_audio.export(output_mp3, format="mp3")
+    
+    print(f"MP3 file saved as '{output_mp3}'")
+    
+    return output_mp3  # Return the path to the MP3 file
+
+def prompt_for_bg(user_input):
+    # Get the prompt for background music generation
+    response = safe_call(generator.Generate(
+        question=f"I need a very brief prompt based on {user_input} to make background music which uses music gen",
+        system_prompt="Generate a prompt for a music gen model",
+        retriever=retriever,
+        llm=llm
+    ))
+    
+    print(response)
+    if response:
+        return generate_bg(response)  # Call generate_bg with the prompt
+    return None
+
 
 def analyze_playlist_moods(songs, preferred_language, max_moods=5):
     mood_count = {}
@@ -365,6 +430,9 @@ def create_playlist_from_input():
     # Retrieve the state of the checkbox (add_top_artists)
     add_top_artists = request.form.get('add_top_artists') == 'on'
 
+    # Call the prompt_for_bg function
+    background_info = prompt_for_bg(user_input)  # Adjust this based on your prompt_for_bg function's signature
+
     # Get songs based on user mood
     playlist_songs = playlist_generator(user_input, preferred_language)
     if not playlist_songs:
@@ -377,10 +445,8 @@ def create_playlist_from_input():
         if not top_artists_songs:
             return "No songs from top artists generated.", 500
 
-        
         all_songs += top_artists_songs
 
-    
     all_songs = [song for song in all_songs if isinstance(song, str) and song.strip()]
     if not all_songs:
         return "No valid songs available for the playlist.", 500
@@ -394,7 +460,7 @@ def create_playlist_from_input():
 
     description = playlist_description_generator(user_input, name)
     if not description:
-        description = "A playlist created based on your mood."
+        description = f"A playlist created based on your mood: {background_info}."  # Incorporate background info into the description
 
     try:
         playlist = sp.user_playlist_create(user=sp.current_user()['id'], name=name, description=description, public=True, collaborative=False)
@@ -403,22 +469,18 @@ def create_playlist_from_input():
 
         token = get_token()
 
-       
         track_ids = []
         for song in all_songs:
             song_info = search_song_id(token, song)
             if song_info:
                 track_ids.append(song_info['uri'])
 
-        
         if track_ids:
             sp.playlist_add_items(playlist_id, track_ids)
 
-        
         playlist_cover_image = sp.playlist_cover_image(playlist_id)
         cover_image_url = playlist_cover_image[0]['url'] if playlist_cover_image else 'No image available'
 
-        
         return redirect(url_for('your_tunes', 
                                 playlist_id=playlist_id, 
                                 playlist_url=playlist_url, 
@@ -427,7 +489,6 @@ def create_playlist_from_input():
     except Exception as e:
         print(f"Error creating playlist: {e}")
         return "Error creating playlist. Please try again.", 500
-
 
 @app.route('/yourtunes')
 def your_tunes():
