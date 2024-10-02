@@ -1,3 +1,9 @@
 venv/
 .env
 
+h.py
+local.py
+musicgen_out.wav
+app.py
+
+static\bg

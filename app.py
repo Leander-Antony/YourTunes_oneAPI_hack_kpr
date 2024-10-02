@@ -224,13 +224,25 @@ def generate_bg(prompt: str):
     # Save the generated audio as a WAV file
     scipy.io.wavfile.write(output_wav, rate=sampling_rate, data=audio_values[0, 0].cpu().numpy())
     
+    # Debug: Check if the file was created
+    if os.path.exists(output_wav):
+        print(f"WAV file successfully created at {output_wav}")
+    else:
+        print(f"Failed to create WAV file at {output_wav}")
+        return None
+
     # Convert the WAV file to MP3 using pydub
-    wav_audio = AudioSegment.from_wav(output_wav)
-    wav_audio.export(output_mp3, format="mp3")
-    
-    print(f"MP3 file saved as '{output_mp3}'")
-    
-    return output_mp3  # Return the path to the MP3 file
+    try:
+        wav_audio = AudioSegment.from_wav(output_wav)
+        wav_audio.export(output_mp3, format="mp3")
+        print(f"MP3 file saved as '{output_mp3}'")
+        return output_mp3
+    except FileNotFoundError:
+        print(f"FileNotFoundError: The file {output_wav} does not exist.")
+        return None
+    except Exception as e:
+        print(f"An error occurred while processing the audio: {str(e)}")
+        return None
 
 def prompt_for_bg(user_input):
     # Get the prompt for background music generation
