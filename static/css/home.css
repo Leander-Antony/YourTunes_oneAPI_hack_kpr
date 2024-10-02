@@ -1,5 +1,6 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Jersey 10', sans-serif;
+    letter-spacing: 1.5px;
     margin: 0;
     padding: 35px;
     box-sizing: border-box;
@@ -63,6 +64,7 @@ body {
 
 .input-fields {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
     justify-content: center;
@@ -80,6 +82,52 @@ body {
 
 .input-field::placeholder {
     color: rgba(255, 255, 255, 0.7);
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    width: 250px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    font-size: 14px;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    cursor: pointer;
+    height: 18px;
+}
+
+.checkbox-container input {
+    margin-right: 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.checkbox-container input:checked {
+    background-color: #6b4ba5;
+    position: relative;
+}
+
+.checkbox-container input:checked::before {
+    content: '\2713';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+}
+
+.checkbox-container:hover input {
+    background-color: rgba(107, 75, 165, 0.5);
 }
 
 .submit-button {
@@ -164,12 +212,10 @@ body {
 
 .track-name {
     font-size: 14px;
-    
 }
 
 .track-artist {
     font-size: 15px;
-    
 }
 
 .popup {
@@ -207,9 +253,11 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-.logout-button:hover, .logout-button:focus, .logout-button:active{
+
+.logout-button:hover,
+.logout-button:focus,
+.logout-button:active {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     -webkit-transform: scale(1.1);
-    transform: scale(1.1)
+    transform: scale(1.1);
 }
-  

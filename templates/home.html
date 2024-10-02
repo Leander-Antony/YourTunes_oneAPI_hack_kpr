@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='image/logo.ico') }}" type="image/x-icon">
@@ -31,13 +33,11 @@
                 <div class="input-fields">
                     <input type="text" name="mood" placeholder="Enter your mood" required class="input-field">
                     <input type="text" id="language" name="language" class="input-field" placeholder="Language" required>
-                    
-                    <!-- New Checkbox for Including Top Artists -->
-                    <div>
+                    <label class="checkbox-container">
                         <input type="checkbox" id="add_top_artists" name="add_top_artists" checked>
-                        <label for="add_top_artists">Add songs also from your top artists</label>
-                    </div>
-
+                        Add songs from your top artists
+                    </label>
+                
                     <input type="submit" value="Create Playlist" class="submit-button">
                 </div>
             </form>
