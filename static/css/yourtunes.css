@@ -29,7 +29,12 @@ body {
     color: rgb(0, 0, 0);
 }
 
-
+h1 {
+    text-align: center;
+    height: 90px;
+    color: rgb(249, 255, 245);
+    font-size: 10px;
+}
 
 .playlist-container {
     display: flex;
@@ -42,9 +47,28 @@ body {
     border: 0px;
 }
 
+.home-btn {
+    color: #eb0000;
+    border: none;
+    padding: 20px 45px;
+    border-radius: 130px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 18px;
+    background-image: linear-gradient(to right , #F5DEB3, #FFF0F5);
+    font-size: 25px;
+    font-family: 'Jersey 10', sans-serif;               
+}
 
-
-
+.note {
+    position: absolute;
+    top: -50px;
+    font-size: 24px;
+    color: white;
+    animation: fall linear infinite;
+}
 
 @keyframes fall {
     to {
@@ -61,9 +85,16 @@ body {
     }
 }
 
+.music {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    width: 500px;
+    height: 500px;
+}
 
-
-.bar {
+.music .bar {
     width: 12px;
     height: 2px;
     border-radius: 10px;
@@ -80,13 +111,21 @@ body {
     }
 }
 
-
+.music .bar:nth-child(1) { animation-delay: 1s; }
+.music .bar:nth-child(2) { animation-delay: 0.8s; }
+.music .bar:nth-child(3) { animation-delay: 0.6s; }
+.music .bar:nth-child(4) { animation-delay: 0.4s; background-color: rgb(255, 249, 239); }
+.music .bar:nth-child(5) { animation-delay: 0.2s; }
+.music .bar:nth-child(6) { animation-delay: 0s; }
+.music .bar:nth-child(7) { animation-delay: 0.2s; }
+.music .bar:nth-child(8) { animation-delay: 0.4s; }
+.music .bar:nth-child(9) { animation-delay: 0.6s; }
+.music .bar:nth-child(10) { animation-delay: 0.8s; }
 
 #mood-list {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 25px;
 }
 
 .progress-container {
@@ -100,10 +139,35 @@ body {
     align-items: center;
 }
 
+.circular-progress {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+.circular-progress::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    border: 10px solid rgba(255, 255, 255, 0.1);
+}
 
-
-
+.circular-progress::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    border: 10px solid transparent;
+    border-top: 10px solid #00ffcc;
+    transform: rotate(0deg);
+    transition: transform 1s ease-in-out;
+}
 
 .circular-progress.animate::after {
     transform: rotate(calc(3.6deg * var(--percentage, 0)));
@@ -117,142 +181,9 @@ body {
     text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
 }
 
-
-
-.note {
-          position: absolute;
-          font-size: 2rem;
-          animation: floatUp 8s linear infinite;
-      }
-      @keyframes floatUp {
-          from { bottom: 0; }
-          to { bottom: 100vh; opacity: 0; }
-      }
-      .progress-container {
-        width: 100px;
-        height: 100px;
-        position: relative;
-        display: inline-block;
-        margin: 10px;
-      }
-      .circular-progress {
-        position: relative;
-        height: 100px;
-        width: 100px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: conic-gradient(
-          #4d5bf9 calc(var(--percentage) * 3.6deg),
-          transparent calc(var(--percentage) * 3.6deg)
-        );
-      }
-
-    .circular-progress::before {
-      content: "";
-      position: absolute;
-      height: 80px;
-      width: 80px;
-      border-radius: 50%;
-      background-color: #1f1f1f;
-  }
-      .circular-progress::after {
-          content: "";
-          position: absolute;
-          inset: 5px;
-          border-radius: 50%;
-          border: 5px solid transparent;
-          
-          transform: rotate(calc(3.6deg * var(--percentage)));
-          animation: growProgressBar 1s ease-out forwards;
-      }
-      @keyframes growProgressBar {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(calc(3.6deg * var(--percentage))); }
-      }
-      .progress-value {
-        position: relative;
-        font-size: 20px;
-        font-weight: 600;
-        color: #4d5bf9;
-    }
-
-      .mood-label {
-          text-align: center;
-          margin-top: 5px;
-          font-weight: bold;
-          color: #fff;
-      }
-
-      /* Home button style */
-      .home-btn {
-          position: absolute;
-          top: 10px;
-          left: 10px;
-          font-size: 2rem;
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: white;
-      }
-
-      .home-btn:hover {
-          transform: scale(1.1);
-      }
-
-      /* Music bars and heading adjustments */
-      .music {
-        margin-top: 30px;
-        margin-bottom: 10px;
-        display: flex;
-        justify-content: center;
-        align-items: flex-end;
-        height: 150px;
-        width: 100%;
-      }
-
-      
-
-      .bar:nth-child(2) { animation-delay: 0.1s; }
-      .bar:nth-child(3) { animation-delay: 0.2s; }
-      .bar:nth-child(4) { animation-delay: 0.3s; }
-      .bar:nth-child(5) { animation-delay: 0.4s; }
-      .bar:nth-child(6) { animation-delay: 0.5s; }
-      .bar:nth-child(7) { animation-delay: 0.6s; }
-      .bar:nth-child(8) { animation-delay: 0.7s; }
-      .bar:nth-child(9) { animation-delay: 0.8s; }
-      .bar:nth-child(10) { animation-delay: 0.9s; }
-
-      @keyframes bounce {
-        0%, 100% { transform: scaleY(1); }
-        50% { transform: scaleY(0.3); }
-      }
-
-      .player-button {
-        background-color: rgba(0, 0, 0, 0.1);;
-        border: none;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: white;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-
-    .player-button:hover {
-        background-color: rgba(0, 0, 0, 0.5);;
-        transform: scale(1.1);
-    }
-
-    /* Custom CSS for player-bg positioning */
-    .player-bg {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000; /* Ensures the button stays above other elements */
-    }
+.mood-label {
+    font-size: 16px;
+    color: #ffffff;
+    text-align: center;
+    margin-top: 10px;
+}
