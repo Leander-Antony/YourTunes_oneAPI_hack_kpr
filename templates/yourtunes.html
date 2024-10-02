@@ -120,6 +120,35 @@
             0%, 100% { transform: scaleY(1); }
             50% { transform: scaleY(0.3); }
         }
+
+        /* Player button styles */
+        .player-button {
+            background-color: rgba(0, 0, 0, 0.1);;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .player-button:hover {
+            background-color: rgba(0, 0, 0, 0.5);;
+            transform: scale(1.1);
+        }
+
+        /* Custom CSS for player-bg positioning */
+        .player-bg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000; /* Ensures the button stays above other elements */
+        }
     </style>
 </head>
 <body>
@@ -130,8 +159,13 @@
 
     <h1 class="h1">Music's in the mix! Tap play and turn up!</h1>
 
-    <!-- Background audio without player -->
-    <audio autoplay loop controls hidden src="static/bg/bg.mp3"></audio>
+    <!-- Audio player -->
+    <audio autoplay loop id="player" src="{{ url_for('static', filename='bg/bg.mp3') }}"></audio>
+
+    <!-- Player Button Positioned at Bottom Right -->
+    <div class="player-bg">
+        <button id="play-pause-button" class="player-button" aria-label="Play">▶️</button>
+    </div>
 
     <!-- Animated musical notes -->
     <div class="note" style="left: 20%; animation-duration: 4s">♪</div>
@@ -140,6 +174,36 @@
     <div class="note" style="left: 80%; animation-duration: 7s">♩</div>
 
     <script>
+        const player = document.getElementById('player');
+    const playPauseButton = document.getElementById('play-pause-button');
+
+    // Update button icon based on player state
+    function updateButton() {
+        if (player.paused) {
+            playPauseButton.textContent = '▶️'; // Play icon
+            playPauseButton.setAttribute('aria-label', 'Play');
+        } else {
+            playPauseButton.textContent = '⏸️'; // Pause icon
+            playPauseButton.setAttribute('aria-label', 'Pause');
+        }
+    }
+
+    // Event listener for the button
+    playPauseButton.addEventListener('click', () => {
+        if (player.paused) {
+            player.play();
+        } else {
+            player.pause();
+        }
+        updateButton();
+    });
+
+    // Update button when audio ends (if not looping)
+    player.addEventListener('ended', updateButton);
+
+    // Ensure the button reflects the correct state on page load
+    updateButton();
+
         // Function to extract playlist ID from Spotify URL
         function getPlaylistIdFromUrl(playlist_url) {
             if (playlist_url.includes("open.spotify.com/playlist/")) {
@@ -219,6 +283,5 @@
             });
         });
     </script>
-
 </body>
 </html>
