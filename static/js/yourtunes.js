@@ -1,69 +1,72 @@
-function getPlaylistIdFromUrl(playlist_url) {
-  if (playlist_url.includes("open.spotify.com/playlist/")) {
-    const playlistId = playlist_url
-      .split("open.spotify.com/playlist/")[1]
-      .split("?")[0];
-    return playlistId;
-  } else {
-    return null;
-  }
-}
 
-const playlistId = getPlaylistIdFromUrl("{{ playlist_url }}");
+const player = document.getElementById('player');
+    const playPauseButton = document.getElementById('play-pause-button');
 
-if (playlistId) {
-  const embedUrl = `https://open.spotify.com/embed/playlist/${playlistId}`;
-  const iframe = document.createElement("iframe");
-  iframe.src = embedUrl;
-  iframe.width = "600";
-  iframe.height = "380";
-  iframe.frameBorder = "0";
-  iframe.allowTransparency = "true";
-  iframe.allow = "encrypted-media";
+    // Update button icon based on player state
+    function updateButton() {
+        if (player.paused) {
+            playPauseButton.textContent = '▶️'; // Play icon
+            playPauseButton.setAttribute('aria-label', 'Play');
+        } else {
+            playPauseButton.textContent = '⏸️'; // Pause icon
+            playPauseButton.setAttribute('aria-label', 'Pause');
+        }
+    }
 
-  document.body.appendChild(iframe);
-} else {
-  const errorMessage = document.createElement("p");
-  errorMessage.textContent = "Invalid Spotify playlist URL.";
-  document.body.appendChild(errorMessage);
-}
+    // Event listener for the button
+    playPauseButton.addEventListener('click', () => {
+        if (player.paused) {
+            player.play();
+        } else {
+            player.pause();
+        }
+        updateButton();
+    });
 
-const notes = document.querySelectorAll(".note");
-notes.forEach((note) => {
-  note.style.animationDuration = `${Math.random() * 3 + 3}s`;
-  note.style.left = `${Math.random() * 100}vw`;
-});
+    // Update button when audio ends (if not looping)
+    player.addEventListener('ended', updateButton);
 
-document.addEventListener("DOMContentLoaded", () => {
-  const moodResults = {{ mood_results | tojson }}; // Assuming you pass this from Flask
+    // Ensure the button reflects the correct state on page load
+    updateButton();
 
-  const moodList = document.getElementById('mood-list');
-  moodList.innerHTML = ''; // Clear previous entries
+    // This script ensures that the progress bars are rendered correctly
+    document.addEventListener('DOMContentLoaded', function() {
+      const progressBars = document.querySelectorAll('.circular-progress');
+      progressBars.forEach(bar => {
+          const percentage = parseFloat(bar.style.getPropertyValue('--percentage'));
+          bar.style.setProperty('--percentage', Math.min(100, Math.max(0, percentage)));
+      });
+  });
+
+  // Mood results rendering
+  const moodResults = {{ mood_results | tojson }}; // Passed from Flask as JSON
+  const moodList = document.getElementById("mood-list");
+  moodList.innerHTML = ""; // Clear previous entries
 
   for (const [mood, percentage] of Object.entries(moodResults)) {
-      const progressContainer = document.createElement('div');
-      progressContainer.classList.add('progress-container');
+    const progressContainer = document.createElement("div");
+    progressContainer.classList.add("progress-container");
 
-      const circularProgress = document.createElement('div');
-      circularProgress.classList.add('circular-progress');
-      circularProgress.style.setProperty('--percentage', percentage);
+    const circularProgress = document.createElement("div");
+    circularProgress.classList.add("circular-progress");
+    circularProgress.style.setProperty("--percentage", percentage);
 
-      const progressValue = document.createElement('div');
-      progressValue.classList.add('progress-value');
-      progressValue.innerText = `${percentage.toFixed(2)}%`;
+    const progressValue = document.createElement("div");
+    progressValue.classList.add("progress-value");
+    progressValue.innerText = `${percentage.toFixed(2)}%`;
 
-      const moodLabel = document.createElement('div');
-      moodLabel.classList.add('mood-label');
-      moodLabel.innerText = mood;
+    const moodLabel = document.createElement("div");
+    moodLabel.classList.add("mood-label");
+    moodLabel.innerText = mood;
 
-      // Append elements
-      progressContainer.appendChild(circularProgress);
-      progressContainer.appendChild(progressValue);
-      progressContainer.appendChild(moodLabel);
-      moodList.appendChild(progressContainer);
+    // Append elements to progress container
+    progressContainer.appendChild(circularProgress);
+    progressContainer.appendChild(progressValue);
+    progressContainer.appendChild(moodLabel);
+    moodList.appendChild(progressContainer);
 
-      // Trigger reflow to ensure animation runs
-      circularProgress.offsetWidth; // Force reflow
-      circularProgress.classList.add('animate'); // Add the animation class
+    // Trigger reflow to ensure animation runs
+    circularProgress.offsetWidth; // Force reflow
+    circularProgress.classList.add("animate"); // Add animation class
   }
 });
