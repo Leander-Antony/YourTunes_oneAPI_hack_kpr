@@ -2,7 +2,7 @@
     margin:0 ;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Jersey 10', sans-serif; 
+    font-family: "poppins",sans-serif;
 }
 
 body{
@@ -46,9 +46,8 @@ body{
     margin-top: -40px;
 }
 
-.login-button {
+.button {
     font-family: 'Jersey 10', sans-serif; 
-    font-weight: bold;
     display: inline-block;
     text-decoration: none;
     color: black;
@@ -64,7 +63,7 @@ body{
 
 }
 
-.login-button:hover, .login-button:focus, .login-button:active{
+.button:hover, .button:focus, .button:active{
        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
        -webkit-transform: scale(1.1);
        transform: scale(1.1)

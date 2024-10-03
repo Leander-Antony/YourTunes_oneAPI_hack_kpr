@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(function() {
         clearInterval(factInterval);
         popup.style.display = 'none';
-      }, 1000000);
+      }, 100000);
 
       form.submit();
     } catch (error) {
