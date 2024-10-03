@@ -2,6 +2,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: 'Jersey 10', sans-serif; 
 }
 
 .h1{
@@ -169,7 +170,7 @@ body {
         position: relative;
         font-size: 20px;
         font-weight: 600;
-        color: #4d5bf9;
+        color: #fff;
     }
 
       .mood-label {
