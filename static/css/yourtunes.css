@@ -1,7 +1,6 @@
 * {
     box-sizing: border-box;
     margin: 0;
-    font-family: 'Jersey 10', sans-serif; 
     padding: 0;
 }
 
@@ -64,13 +63,7 @@ body {
 
 
 
-.bar {
-    width: 12px;
-    height: 2px;
-    border-radius: 10px;
-    background-color: #ffffff;
-    animation: up_down 1.5s ease-in-out infinite;
-}
+
 
 @keyframes up_down {
     0%, 100% {
@@ -204,31 +197,60 @@ body {
 
       /* Music bars and heading adjustments */
       .music {
-        margin-top: 30px;
-        margin-bottom: 10px;
+        margin: 30px auto;
         display: flex;
         justify-content: center;
-        align-items: flex-end;
-        height: 150px;
-        width: 100%;
-      }
-
+        align-items: center;
+        height: 100px;
+        width: 90%;
+        max-width: 900px;
+    }
+    
+    .bar {
+        width: 6px;  /* Increased from 2px to 6px */
+        margin: 0 2px;  /* Increased from 1px to 2px on each side */
+        background-color: #ffffff;
+        animation: waveform 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes waveform {
+        0%, 100% {
+            height: var(--min-height);
+        }
+        50% {
+            height: var(--max-height);
+        }
+    }
+    
+    /* Define 20 different height variations */
+    .bar:nth-child(20n + 1) { --min-height: 5px; --max-height: 30px; }
+    .bar:nth-child(20n + 2) { --min-height: 8px; --max-height: 40px; }
+    .bar:nth-child(20n + 3) { --min-height: 12px; --max-height: 50px; }
+    .bar:nth-child(20n + 4) { --min-height: 15px; --max-height: 60px; }
+    .bar:nth-child(20n + 5) { --min-height: 18px; --max-height: 70px; }
+    .bar:nth-child(20n + 6) { --min-height: 7px; --max-height: 35px; }
+    .bar:nth-child(20n + 7) { --min-height: 10px; --max-height: 45px; }
+    .bar:nth-child(20n + 8) { --min-height: 13px; --max-height: 55px; }
+    .bar:nth-child(20n + 9) { --min-height: 16px; --max-height: 65px; }
+    .bar:nth-child(20n + 10) { --min-height: 20px; --max-height: 75px; }
+    .bar:nth-child(20n + 11) { --min-height: 6px; --max-height: 32px; }
+    .bar:nth-child(20n + 12) { --min-height: 9px; --max-height: 42px; }
+    .bar:nth-child(20n + 13) { --min-height: 11px; --max-height: 52px; }
+    .bar:nth-child(20n + 14) { --min-height: 14px; --max-height: 62px; }
+    .bar:nth-child(20n + 15) { --min-height: 17px; --max-height: 72px; }
+    .bar:nth-child(20n + 16) { --min-height: 19px; --max-height: 77px; }
+    .bar:nth-child(20n + 17) { --min-height: 4px; --max-height: 28px; }
+    .bar:nth-child(20n + 18) { --min-height: 7px; --max-height: 38px; }
+    .bar:nth-child(20n + 19) { --min-height: 10px; --max-height: 48px; }
+    .bar:nth-child(20n + 20) { --min-height: 13px; --max-height: 58px; }
+    
+    /* Define 5 animation delay variations */
+    .bar:nth-child(5n + 1) { animation-delay: 0s; }
+    .bar:nth-child(5n + 2) { animation-delay: 0.3s; }
+    .bar:nth-child(5n + 3) { animation-delay: 0.6s; }
+    .bar:nth-child(5n + 4) { animation-delay: 0.9s; }
+    .bar:nth-child(5n + 5) { animation-delay: 1.2s; }
       
-
-      .bar:nth-child(2) { animation-delay: 0.1s; }
-      .bar:nth-child(3) { animation-delay: 0.2s; }
-      .bar:nth-child(4) { animation-delay: 0.3s; }
-      .bar:nth-child(5) { animation-delay: 0.4s; }
-      .bar:nth-child(6) { animation-delay: 0.5s; }
-      .bar:nth-child(7) { animation-delay: 0.6s; }
-      .bar:nth-child(8) { animation-delay: 0.7s; }
-      .bar:nth-child(9) { animation-delay: 0.8s; }
-      .bar:nth-child(10) { animation-delay: 0.9s; }
-
-      @keyframes bounce {
-        0%, 100% { transform: scaleY(1); }
-        50% { transform: scaleY(0.3); }
-      }
 
       .player-button {
         background-color: rgba(0, 0, 0, 0.1);;
