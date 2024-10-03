@@ -1,14 +1,3 @@
-
-
-    // This script ensures that the progress bars are rendered correctly
-    document.addEventListener('DOMContentLoaded', function() {
-      const progressBars = document.querySelectorAll('.circular-progress');
-      progressBars.forEach(bar => {
-          const percentage = parseFloat(bar.style.getPropertyValue('--percentage'));
-          bar.style.setProperty('--percentage', Math.min(100, Math.max(0, percentage)));
-      });
-  });
-
   // Mood results rendering
   const moodResults = {{ mood_results | tojson }}; // Passed from Flask as JSON
   const moodList = document.getElementById("mood-list");
