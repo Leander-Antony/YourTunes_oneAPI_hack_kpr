@@ -12,15 +12,15 @@ from beyondllm.source import fit
 import re
 from beyondllm.embeddings import GeminiEmbeddings
 from beyondllm.llms import GeminiModel
-from beyondllm.llms import OllamaModel
-from transformers import MusicgenForConditionalGeneration, AutoProcessor
-import scipy
-import torch
-from pydub import AudioSegment
+# from beyondllm.llms import OllamaModel
+# from transformers import MusicgenForConditionalGeneration, AutoProcessor
+# import scipy
+# import torch
+# from pydub import AudioSegment
 # import intel_extension_for_pytorch as ipex
 
 # Check if GPU is available, else use CPU
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
+# device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 load_dotenv()
 client_id = os.getenv('CLIENT_ID')
@@ -31,7 +31,9 @@ google_api = os.getenv('GOOGLE_API_KEY')
 embed_model = GeminiEmbeddings(api_key=google_api, model_name="models/embedding-001")
 llm = GeminiModel(model_name="gemini-pro") 
 # llm = ipex.optimize(llm, dtype=torch.float16)
-# llm = OllamaModel(model="wizardlm2")
+# llm1 = OllamaModel(model="wizardlm2")
+# llm2 = OllamaModel(model="llama3.2")
+# llm3 = OllamaModel(model="phi3.5")
 data = fit(path="data/text.md", dtype="md", chunk_size=512, chunk_overlap=100)
 retriever = retrieve.auto_retriever(data=data, embed_model=embed_model, type="normal", top_k=4)
 
@@ -115,45 +117,65 @@ def safe_call(pipeline):
         return None
 
 
+
 def extract_songs(text):
     # Assuming each song is on a new line
     lines = text.split('\n')
     songs = [line.strip() for line in lines if line.strip()]
     return songs
 
+def clean_song_list(song_list):
+    cleaned_songs = []
+    for song in song_list:
+        # Split by ". " and take the part after it, which removes the numbering
+        cleaned_song = song.split('. ', 1)[-1].strip()
+        cleaned_songs.append(cleaned_song)
+    
+    # Remove duplicates by converting to a set, then back to a list
+    unique_songs = list(set(cleaned_songs))
+    return unique_songs
 
 def songs_from_top_artists(user_input):
     top_artists = sp.current_user_top_artists(limit=5, offset=0, time_range='medium_term')
-    artists_name = [(artist['name']) for artist in top_artists['items']]
+    artists_name = [artist['name'] for artist in top_artists['items']]
+    
     pipeline = generator.Generate(
         question=user_input,
-        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 10 songs that matches the user input and situation . I need the output in a simple list format, one song per line.",
-        retriever=retriever,
-        llm= llm
-    )
-    response = safe_call(pipeline)
-    if response:
-        songs = extract_songs(response)
-        print("Getting Songs from top artists")
-        print(songs)
-        return songs
-
-    return []
-
-
-def playlist_generator(user_input, prferred_language):
-    pipeline = generator.Generate(
-        question=user_input,
-        system_prompt=f"You are a playlist generator based on the {user_input}. Provide 30 songs that matches {user_input} in {prferred_language}. I need the output in a simple list format, one song per line and i need you convert the name of the song to english text.",
+        system_prompt=f"You are a playlist generator based on the user's {user_input} from {artists_name}. Provide 10 songs that match the user input and situation. I need the output in a simple list format, one song per line.",
         retriever=retriever,
         llm=llm
     )
+    
     response = safe_call(pipeline)
     if response:
         songs = extract_songs(response)
-        print("Generating sonngs based on user's input")
-        print(songs)
-        return songs
+        # Clean the song list to remove numbers and duplicates
+        unique_cleaned_songs = clean_song_list(songs)
+        print("Getting unique and cleaned songs from top artists")
+        print(unique_cleaned_songs)
+        return unique_cleaned_songs
+    
+    return []
+
+
+def playlist_generator(user_input, preferred_language):
+    pipeline = generator.Generate(
+        question=f"Give me a list of songs based on this mood {user_input}. I need the output in the format 'song'.",
+        system_prompt=f"""You are a playlist generator based on the {user_input}. 
+        Provide 50 songs that match {user_input} and output only in {preferred_language}. 
+        I need you to send the name of the song in English text.""",
+        retriever=retriever,
+        llm=llm
+    )
+    
+    response = safe_call(pipeline)
+    if response:
+        songs = extract_songs(response)
+        # Clean the song list to remove numbers and duplicates
+        unique_cleaned_songs = clean_song_list(songs)
+        print("Generating unique and cleaned songs based on user's input")
+        print(unique_cleaned_songs)
+        return unique_cleaned_songs
     
     return []
 
@@ -162,14 +184,14 @@ def extract_playlist_name(text):
     match = re.search(r'^\s*"(.+?)"\s*$|^\s*\*\*(.+?)\*\*\s*$|^\s*(\w[\w\s]*)\s*$', text)
     if match:
         return match.group(1) or match.group(2) or match.group(3)
-    return None
+    return text
 
 
-def playlist_name_generator(songs, user_input):
-    song_list_str = '\n'.join(songs)  # Convert list to a single string
+def playlist_name_generator(user_input):
     pipeline = generator.Generate(
-        question=song_list_str,
-        system_prompt=f"Based on the user input and {user_input}, generate a name for the playlist that resonates with the mood.",
+        question="Generate one Name for my playlist",
+        system_prompt=f"""Based on the user input and {user_input}, generate a single name for the playlist that resonates with the mood.
+        i need the response in one to three words""",
         retriever=retriever,
         llm=llm
     )
@@ -178,13 +200,13 @@ def playlist_name_generator(songs, user_input):
     if extracted_name is None:
         print("YourTunes")
         return "YourTunes"
-    print(extracted_name)
-    return extracted_name
+    print(response)
+    return response
 
 def playlist_description_generator(user_input, name):
     pipeline = generator.Generate(
         question=f"i need description for my playlist based on {user_input} and {name}",
-        system_prompt=f"Generate a brief description for the a playlist .",
+        system_prompt=f"Generate a brief description for the a playlist just the description no ned additional explanation.",
         retriever=retriever,
         llm=llm
     )
@@ -192,79 +214,67 @@ def playlist_description_generator(user_input, name):
     print(response)
     return response
 
-def generate_bg(prompt: str):
-    MUSIC_FOLDER = "static/bg"
+# def generate_bg(prompt: str):
+#     MUSIC_FOLDER = "static/bg"
     
-    # Create the directory if it does not exist
-    if not os.path.exists(MUSIC_FOLDER):
-        os.makedirs(MUSIC_FOLDER)
+#     # Create the directory if it does not exist
+#     if not os.path.exists(MUSIC_FOLDER):
+#         os.makedirs(MUSIC_FOLDER)
     
-    # Load the model and processor
-    model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
-    processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+#     # Load the model and processor
+#     model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
+#     processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
     
     
-    model.to(device)
+#     model.to(device)
     
-    # Process the text prompt
-    inputs = processor(
-        text=[prompt],
-        padding=True,
-        return_tensors="pt",
-    )
+#     # Process the text prompt
+#     inputs = processor(
+#         text=[prompt],
+#         padding=True,
+#         return_tensors="pt",
+#     )
     
-    # Generate audio
-    audio_values = model.generate(**inputs.to(device), do_sample=True, guidance_scale=3, max_new_tokens=1024)
-    sampling_rate = model.config.audio_encoder.sampling_rate
+#     # Generate audio
+#     audio_values = model.generate(**inputs.to(device), do_sample=True, guidance_scale=3, max_new_tokens=256)
+#     sampling_rate = model.config.audio_encoder.sampling_rate
     
-    # Define output paths
-    output_wav = os.path.join(MUSIC_FOLDER, "musicgen_out.wav")
-    output_mp3 = os.path.join(MUSIC_FOLDER, "bg.mp3")
+#     # Define output paths
+#     output_wav = os.path.join(MUSIC_FOLDER, "musicgen_out.wav")
+#     output_mp3 = os.path.join(MUSIC_FOLDER, "bg.mp3")
     
-    # Save the generated audio as a WAV file
-    scipy.io.wavfile.write(output_wav, rate=sampling_rate, data=audio_values[0, 0].cpu().numpy())
+#     # Save the generated audio as a WAV file
+#     scipy.io.wavfile.write(output_wav, rate=sampling_rate, data=audio_values[0, 0].cpu().numpy())
     
-    # Debug: Check if the file was created
-    if os.path.exists(output_wav):
-        print(f"WAV file successfully created at {output_wav}")
-    else:
-        print(f"Failed to create WAV file at {output_wav}")
-        return None
+#     # Convert the WAV file to MP3 using pydub
+#     wav_audio = AudioSegment.from_wav(output_wav)
+#     wav_audio.export(output_mp3, format="mp3")
+    
+#     print(f"MP3 file saved as '{output_mp3}'")
+    
+#     return output_mp3  # Return the path to the MP3 file
 
-    # Convert the WAV file to MP3 using pydub
-    try:
-        wav_audio = AudioSegment.from_wav(output_wav)
-        wav_audio.export(output_mp3, format="mp3")
-        print(f"MP3 file saved as '{output_mp3}'")
-        return output_mp3
-    except FileNotFoundError:
-        print(f"FileNotFoundError: The file {output_wav} does not exist.")
-        return None
-    except Exception as e:
-        print(f"An error occurred while processing the audio: {str(e)}")
-        return None
-
-def prompt_for_bg(user_input):
-    # Get the prompt for background music generation
-    response = safe_call(generator.Generate(
-        question=f"I need a very brief prompt based on {user_input} to make background music which uses music gen",
-        system_prompt="Generate a prompt for a music gen model",
-        retriever=retriever,
-        llm=llm
-    ))
+# def prompt_for_bg(user_input):
+#     # Get the prompt for background music generation
+#     response = safe_call(generator.Generate(
+#         question=f"I need a very brief prompt based on {user_input} to make background music which uses music gen",
+#         system_prompt="Generate a prompt for a music gen model suggest phonk or instruments or some beats or just plain music",
+#         retriever=retriever,
+#         llm=llm
+#     ))
     
-    print(response)
-    if response:
-        return generate_bg(response)  # Call generate_bg with the prompt
-    return None
+#     print(response)
+#     if response:
+#         return generate_bg(response)  # Call generate_bg with the prompt
+#     return None
 
 
-def analyze_playlist_moods(songs, preferred_language, max_moods=5):
+def analyze_playlist_moods(songs, preferred_language,user_input, max_moods=5):
     mood_count = {}
 
     song_list = ', '.join(songs)
     prompt = (
-        f"Analyze the moods of the following songs which are in {preferred_language} language and provide only the mood names.\n"
+        f"Analyze the moods of the following songs which are in {preferred_language} language based on {user_input} and provide only the mood names.\n"
         f"Songs: {song_list}\n"
         "Please respond with the mood names separated by commas without any additional text or song titles.\n"
         "Example: Happy, Energetic, Calm"
@@ -272,11 +282,12 @@ def analyze_playlist_moods(songs, preferred_language, max_moods=5):
 
     pipeline = generator.Generate(
         question=prompt,
-        system_prompt="Provide only the mood names, one for each song.",
+        system_prompt=f"provide the mood names, one for each song",
         retriever=retriever,
         llm=llm
     )
     response = safe_call(pipeline)
+    print(response)
 
 
     if not isinstance(response, str):
@@ -443,36 +454,48 @@ def create_playlist_from_input():
     add_top_artists = request.form.get('add_top_artists') == 'on'
 
     # Call the prompt_for_bg function
-    background_info = prompt_for_bg(user_input)  # Adjust this based on your prompt_for_bg function's signature
+    # background_info = prompt_for_bg(user_input)  # Adjust this based on your prompt_for_bg function's signature
 
     # Get songs based on user mood
     playlist_songs = playlist_generator(user_input, preferred_language)
     if not playlist_songs:
         return "No songs generated for the playlist.", 500
 
-    all_songs = playlist_songs
+    # Use a set to remove duplicates
+    all_songs = set(playlist_songs)
+    all_songs_list = list(all_songs)
+
+    # Remove the first element if the list is not empty
+    if all_songs_list:
+        all_songs_list.pop(0)
+
+    # Convert the list back to a set if needed
+    all_songs = set(all_songs_list)
 
     if add_top_artists:
         top_artists_songs = songs_from_top_artists(user_input)
         if not top_artists_songs:
             return "No songs from top artists generated.", 500
 
-        all_songs += top_artists_songs
+        # Add top artist songs to the set (no duplicates)
+        all_songs.update(top_artists_songs)
 
-    all_songs = [song for song in all_songs if isinstance(song, str) and song.strip()]
+    # Filter out invalid songs (non-string or empty strings)
+    all_songs = {song for song in all_songs if isinstance(song, str) and song.strip()}
     if not all_songs:
         return "No valid songs available for the playlist.", 500
 
-    mood_results = analyze_playlist_moods(all_songs, preferred_language)  
+    mood_results = analyze_playlist_moods(all_songs, preferred_language,user_input)
     print("Mood analysis results:", mood_results)
 
-    name = playlist_name_generator(all_songs, user_input)
+    name = playlist_name_generator(user_input)
+    name = extract_playlist_name(name)
     if not name:
         return "Error generating playlist name.", 500
 
     description = playlist_description_generator(user_input, name)
     if not description:
-        description = f"A playlist created based on your mood: {background_info}."  # Incorporate background info into the description
+        description = f"A playlist created based on your mood: {user_input}."  # Incorporate background info into the description
 
     try:
         playlist = sp.user_playlist_create(user=sp.current_user()['id'], name=name, description=description, public=True, collaborative=False)
