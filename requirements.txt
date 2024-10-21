@@ -1,0 +1,4 @@
+spotipy
+flask
+python-dotenv
+beyondllm
