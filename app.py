@@ -41,7 +41,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(64)
 
 # redirect_uri = 'http://localhost:5000/callback'
-redirect_uri = 'https://yourtunes-oneapi-hack-kpr.onrender.com'
+redirect_uri = 'https://yourtunes-oneapi-hack-kpr.onrender.com/callback'
 scope = "playlist-read-private, user-modify-playback-state, user-read-playback-state, playlist-modify-private, playlist-modify-public, user-top-read"
 
 cache_handler = FlaskSessionCacheHandler(session)
