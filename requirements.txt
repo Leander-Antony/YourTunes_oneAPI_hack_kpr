@@ -2,3 +2,4 @@ spotipy
 flask
 python-dotenv
 beyondllm
+gunicorn
