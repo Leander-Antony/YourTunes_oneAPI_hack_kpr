@@ -29,7 +29,7 @@ google_api = os.getenv('GOOGLE_API_KEY')
 
 
 embed_model = GeminiEmbeddings(api_key=google_api, model_name="models/embedding-001")
-llm = GeminiModel(model_name="gemini-pro") 
+llm = GeminiModel(model_name="gemini-1.5-pro-002") 
 # llm = ipex.optimize(llm, dtype=torch.float16)
 # llm1 = OllamaModel(model="wizardlm2")
 # llm2 = OllamaModel(model="llama3.2")
