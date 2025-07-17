@@ -54,17 +54,6 @@ To get started with **YourTunes**, follow these steps:
 
     Open your browser and navigate to `http://localhost:5000`.
 
-## Design
-
-Explore our design on Figma:
-[View Figma Design]https://www.figma.com/proto/ShJHuGslnOhq9VmECCq0HK/Untitled?node-id=0-1&t=3i13VvUeCfS9dIIx-1
-
-## Team
-
-- [Leander Antony](https://github.com/Leander-Antony) 
-- [Bhoopesh](https://github.com/bhoopesh1)
-- [Abishek](https://github.com/Abishek-coder01)
-- [Harsshan Senthil](https://github.com/harsshan06s)
   
 
 ## Requirements
