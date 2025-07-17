@@ -58,4 +58,4 @@ To get started with **YourTunes**, follow these steps:
 
 ## Requirements
 
-- Python 3.12.4
+- Python 3.11
