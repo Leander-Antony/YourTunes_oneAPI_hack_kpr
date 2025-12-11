@@ -12,15 +12,14 @@ from beyondllm.source import fit
 import re
 from beyondllm.embeddings import GeminiEmbeddings
 from beyondllm.llms import GeminiModel
-# from beyondllm.llms import OllamaModel
-# from transformers import MusicgenForConditionalGeneration, AutoProcessor
-# import scipy
-# import torch
-# from pydub import AudioSegment
-# import intel_extension_for_pytorch as ipex
+from beyondllm.llms import OllamaModel
+from transformers import MusicgenForConditionalGeneration, AutoProcessor
+import scipy
+import torch
+from pydub import AudioSegment
 
 # Check if GPU is available, else use CPU
-# device = "cuda:0" if torch.cuda.is_available() else "cpu"
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 load_dotenv()
 client_id = os.getenv('CLIENT_ID')
@@ -29,19 +28,18 @@ google_api = os.getenv('GOOGLE_API_KEY')
 
 
 embed_model = GeminiEmbeddings(api_key=google_api, model_name="models/embedding-001")
-llm = GeminiModel(model_name="gemini-1.5-pro-002") 
-# llm = ipex.optimize(llm, dtype=torch.float16)
-# llm1 = OllamaModel(model="wizardlm2")
-# llm2 = OllamaModel(model="llama3.2")
-# llm3 = OllamaModel(model="phi3.5")
+# llm = GeminiModel(model_name="gemini-1.5-pro-002") 
+# llm = OllamaModel(model="wizardlm2")
+# llm = OllamaModel(model="llama3.2")
+llm = OllamaModel(model="llama3:latest")
+# llm = OllamaModel(model="phi3.5")
 data = fit(path="data/text.md", dtype="md", chunk_size=512, chunk_overlap=100)
 retriever = retrieve.auto_retriever(data=data, embed_model=embed_model, type="normal", top_k=4)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(64)
 
-# redirect_uri = 'http://localhost:5000/callback'
-redirect_uri = 'https://yourtunes-oneapi-hack-kpr.onrender.com/callback'
+redirect_uri = 'http://localhost:5000/callback'
 scope = "playlist-read-private, user-modify-playback-state, user-read-playback-state, playlist-modify-private, playlist-modify-public, user-top-read"
 
 cache_handler = FlaskSessionCacheHandler(session)
@@ -215,59 +213,59 @@ def playlist_description_generator(user_input, name):
     print(response)
     return response
 
-# def generate_bg(prompt: str):
-#     MUSIC_FOLDER = "static/bg"
+def generate_bg(prompt: str):
+    MUSIC_FOLDER = "static/bg"
     
-#     # Create the directory if it does not exist
-#     if not os.path.exists(MUSIC_FOLDER):
-#         os.makedirs(MUSIC_FOLDER)
+    # Create the directory if it does not exist
+    if not os.path.exists(MUSIC_FOLDER):
+        os.makedirs(MUSIC_FOLDER)
     
-#     # Load the model and processor
-#     model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
-#     processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+    # Load the model and processor
+    model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
+    processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
     
     
-#     model.to(device)
+    model.to(device)
     
-#     # Process the text prompt
-#     inputs = processor(
-#         text=[prompt],
-#         padding=True,
-#         return_tensors="pt",
-#     )
+    # Process the text prompt
+    inputs = processor(
+        text=[prompt],
+        padding=True,
+        return_tensors="pt",
+    )
     
-#     # Generate audio
-#     audio_values = model.generate(**inputs.to(device), do_sample=True, guidance_scale=3, max_new_tokens=256)
-#     sampling_rate = model.config.audio_encoder.sampling_rate
+    # Generate audio
+    audio_values = model.generate(**inputs.to(device), do_sample=True, guidance_scale=3, max_new_tokens=256)
+    sampling_rate = model.config.audio_encoder.sampling_rate
     
-#     # Define output paths
-#     output_wav = os.path.join(MUSIC_FOLDER, "musicgen_out.wav")
-#     output_mp3 = os.path.join(MUSIC_FOLDER, "bg.mp3")
+    # Define output paths
+    output_wav = os.path.join(MUSIC_FOLDER, "musicgen_out.wav")
+    output_mp3 = os.path.join(MUSIC_FOLDER, "bg.mp3")
     
-#     # Save the generated audio as a WAV file
-#     scipy.io.wavfile.write(output_wav, rate=sampling_rate, data=audio_values[0, 0].cpu().numpy())
+    # Save the generated audio as a WAV file
+    scipy.io.wavfile.write(output_wav, rate=sampling_rate, data=audio_values[0, 0].cpu().numpy())
     
-#     # Convert the WAV file to MP3 using pydub
-#     wav_audio = AudioSegment.from_wav(output_wav)
-#     wav_audio.export(output_mp3, format="mp3")
+    # Convert the WAV file to MP3 using pydub
+    wav_audio = AudioSegment.from_wav(output_wav)
+    wav_audio.export(output_mp3, format="mp3")
     
-#     print(f"MP3 file saved as '{output_mp3}'")
+    print(f"MP3 file saved as '{output_mp3}'")
     
-#     return output_mp3  # Return the path to the MP3 file
+    return output_mp3  # Return the path to the MP3 file
 
-# def prompt_for_bg(user_input):
-#     # Get the prompt for background music generation
-#     response = safe_call(generator.Generate(
-#         question=f"I need a very brief prompt based on {user_input} to make background music which uses music gen",
-#         system_prompt="Generate a prompt for a music gen model suggest phonk or instruments or some beats or just plain music",
-#         retriever=retriever,
-#         llm=llm
-#     ))
+def prompt_for_bg(user_input):
+    # Get the prompt for background music generation
+    response = safe_call(generator.Generate(
+        question=f"I need a very brief prompt based on {user_input} to make background music which uses music gen",
+        system_prompt="Generate a prompt for a music gen model suggest phonk or instruments or some beats or just plain music",
+        retriever=retriever,
+        llm=llm
+    ))
     
-#     print(response)
-#     if response:
-#         return generate_bg(response)  # Call generate_bg with the prompt
-#     return None
+    print(response)
+    if response:
+        return generate_bg(response)  # Call generate_bg with the prompt
+    return None
 
 
 def analyze_playlist_moods(songs, preferred_language,user_input, max_moods=5):
@@ -455,7 +453,7 @@ def create_playlist_from_input():
     add_top_artists = request.form.get('add_top_artists') == 'on'
 
     # Call the prompt_for_bg function
-    # background_info = prompt_for_bg(user_input)  # Adjust this based on your prompt_for_bg function's signature
+    background_info = prompt_for_bg(user_input)  # Adjust this based on your prompt_for_bg function's signature
 
     # Get songs based on user mood
     playlist_songs = playlist_generator(user_input, preferred_language)
