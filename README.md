@@ -3,6 +3,10 @@
 
 **YourTunes** is a Flask-based application that integrates with Spotify to create personalized playlists tailored to your mood. Whether you're feeling happy, relaxed, or energized, YourTunes curates the perfect playlist to match your emotions.
 
+## Demo
+
+[Watch the demo on YouTube](https://www.youtube.com/watch?v=TJv-FHiTEO4)
+
 ## Features
 
 - **Mood-Based Playlists**: Generates playlists based on the user's mood.
